@@ -15,7 +15,7 @@
       <link>https://NPNB123.github.io/post/transformer%E6%9E%B6%E6%9E%84%E7%9A%84pytorch%E5%AE%9E%E7%8E%B0/</link>
       <pubDate>Sun, 08 Dec 2024 19:28:21 +0800</pubDate><author>huozerun@qq.com (NPNB)</author>
       <guid>https://NPNB123.github.io/post/transformer%E6%9E%B6%E6%9E%84%E7%9A%84pytorch%E5%AE%9E%E7%8E%B0/</guid>
-      <description>&lt;h3 id=&#34;transformer架构的pytorch实现&#34;&gt;Transformer架构的PyTorch实现&lt;/h3&gt;&#xA;&lt;h4 id=&#34;transformer结构图&#34;&gt;Transformer结构图&lt;/h4&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bigimg: [{src: &amp;#34;./assets/image-20241208195200969.png&amp;#34;, desc: &amp;#34;Transformer&amp;#34;}]&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+      <description>&lt;h3 id=&#34;transformer架构的pytorch实现&#34;&gt;Transformer架构的PyTorch实现&lt;/h3&gt;&#xA;&lt;h4 id=&#34;transformer结构图&#34;&gt;Transformer结构图&lt;/h4&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bigimg: [{src: &amp;#34;\img\Transformer_a\transformer_a.png, desc: &amp;#34;Transformer&amp;#34;}]&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
   </channel>
 </rss>
