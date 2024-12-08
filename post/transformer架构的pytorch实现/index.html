@@ -12,12 +12,9 @@
  
 
 
-      <title>Transformer架构的PyTorch实现 - </title>
+      <title>Transformer的PyTorch实现 - </title>
 
-  <meta name="description" content="Transformer架构的PyTorch实现
-Transformer结构图
-bigimg: [{src: &#34;\img\Transformer_a\transformer_a.png, desc: &#34;Transformer&#34;}]
-">
+  <meta name="description" content="介绍 Transformer 的结构及其PyTorch实现">
   <meta name="author" content="NPNB"/><script type="application/ld+json">
 {
     "@context": "http://schema.org",
@@ -54,7 +51,7 @@ bigimg: [{src: &#34;\img\Transformer_a\transformer_a.png, desc: &#34;Transformer
         "position": 3,
         "item": {
           "@id": "https:\/\/NPNB123.github.io\/post\/transformer%E6%9E%B6%E6%9E%84%E7%9A%84pytorch%E5%AE%9E%E7%8E%B0\/",
-          "name": "Transformer架构的 py torch实现"
+          "name": "Transformer的 py torch实现"
         }
     }]
 }
@@ -65,10 +62,10 @@ bigimg: [{src: &#34;\img\Transformer_a\transformer_a.png, desc: &#34;Transformer
   "author": {
     "name" : "NPNB"
   },
-  "headline": "Transformer架构的PyTorch实现",
-  "description" : "Transformer架构的PyTorch实现 Transformer结构图 bigimg: [{src: \u0026#34;\\img\\Transformer_a\\transformer_a.png, desc: \u0026#34;Transformer\u0026#34;}] ",
+  "headline": "Transformer的PyTorch实现",
+  "description" : "介绍 Transformer 的结构及其PyTorch实现\n",
   "inLanguage" : "en",
-  "wordCount":  7 ,
+  "wordCount":  335 ,
   "datePublished" : "2024-12-08T19:28:21\u002b08:00",
   "dateModified" : "2024-12-08T19:28:21\u002b08:00",
   "image" : "https:\/\/NPNB123.github.io\/img\/avatar-icon.png",
@@ -88,21 +85,15 @@ bigimg: [{src: &#34;\img\Transformer_a\transformer_a.png, desc: &#34;Transformer
 </script>
 
 
-<meta property="og:title" content="Transformer架构的PyTorch实现" />
-<meta property="og:description" content="Transformer架构的PyTorch实现
-Transformer结构图
-bigimg: [{src: &#34;\img\Transformer_a\transformer_a.png, desc: &#34;Transformer&#34;}]
-">
+<meta property="og:title" content="Transformer的PyTorch实现" />
+<meta property="og:description" content="介绍 Transformer 的结构及其PyTorch实现">
 <meta property="og:image" content="https://NPNB123.github.io/img/avatar-icon.png" />
 <meta property="og:url" content="https://NPNB123.github.io/post/transformer%E6%9E%B6%E6%9E%84%E7%9A%84pytorch%E5%AE%9E%E7%8E%B0/" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="NPNB&#39;s Blog" />
 
-  <meta name="twitter:title" content="Transformer架构的PyTorch实现" />
-  <meta name="twitter:description" content="Transformer架构的PyTorch实现
-Transformer结构图
-bigimg: [{src: &#34;\img\Transformer_a\transformer_a.png, desc: &#34;Transformer&#34;}]
-">
+  <meta name="twitter:title" content="Transformer的PyTorch实现" />
+  <meta name="twitter:description" content="介绍 Transformer 的结构及其PyTorch实现">
   <meta name="twitter:image" content="https://NPNB123.github.io/img/avatar-icon.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <link href='https://NPNB123.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
@@ -235,7 +226,7 @@ bigimg: [{src: &#34;\img\Transformer_a\transformer_a.png, desc: &#34;Transformer
           <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
             <div class="post-heading">
               
-                <h1>Transformer架构的PyTorch实现</h1>
+                <h1>Transformer的PyTorch实现</h1>
               
               
               
@@ -246,10 +237,10 @@ bigimg: [{src: &#34;\img\Transformer_a\transformer_a.png, desc: &#34;Transformer
   <i class="fas fa-calendar"></i>&nbsp;Posted on 12/08/2024
   
   
-    &nbsp;|&nbsp;<i class="fas fa-clock"></i>&nbsp;1&nbsp;minutes
+    &nbsp;|&nbsp;<i class="fas fa-clock"></i>&nbsp;2&nbsp;minutes
   
   
-    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;7&nbsp;words
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;335&nbsp;words
   
   
     
@@ -275,10 +266,124 @@ bigimg: [{src: &#34;\img\Transformer_a\transformer_a.png, desc: &#34;Transformer
   <div class="row">
     <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
       <article role="main" class="blog-post">
-        <h3 id="transformer架构的pytorch实现">Transformer架构的PyTorch实现</h3>
-<h4 id="transformer结构图">Transformer结构图</h4>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">bigimg: [{src: &#34;\img\Transformer_a\transformer_a.png, desc: &#34;Transformer&#34;}]
-</span></span></code></pre></div>
+        <p>介绍 Transformer 的结构及其PyTorch实现</p>
+<p>Transformer 是在论文 <a href="https://arxiv.org/pdf/1706.03762">attention is all you need</a> 中所提出的一个seq2seq模型</p>
+<h2 id="transformer结构图">Transformer结构图</h2>
+<p><img src="../assets/image-20241208203130737.png" alt="transformer"></p>
+<p><strong>Transformer由Encode和Decode两部分组成</strong></p>
+<p><img src="../assets/image-20241208212505320.png" alt="encode_and_decode"></p>
+<p>Encode 把输入处理成隐藏层, Decode 把Encode获得的信息处理成自然语言序列</p>
+<h2 id="encode的结构">Encode的结构</h2>
+<p><img src="../assets/%E8%AF%8D%E5%B5%8C%E5%85%A5.png" alt="词嵌入"></p>
+<p>Encode中包含:</p>
+<ol>
+<li>词嵌入</li>
+<li>位置编码</li>
+<li>多头自注意力</li>
+<li>残差连接及层归一化</li>
+<li>前馈神经网络</li>
+</ol>
+<h3 id="词嵌入input-embedding">词嵌入(Input Embedding)</h3>
+<p>每个输入词语通过一个词嵌入层（Embedding Layer）映射到一个固定维度的连续向量空间。</p>
+<p>在实现词嵌入时往往可以利用PyTorch的<code>torch.nn.Embedding(vocab_size, d_model)</code></p>
+<hr>
+<h3 id="位置编码positional-encoding">位置编码(Positional Encoding)</h3>
+<p>由于 Transformer 模型本身是基于自注意力机制的，没有内建的顺序信息，它不能直接获取输入序列的顺序。为了解决这个问题，Transformer 引入了位置编码（Positional Encoding）。</p>
+<p>位置编码的目的是, 将位置信息附加到原始的信息上.</p>
+<p>位置编码的计算方式:
+<img src="../assets/%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E8%AE%A1%E7%AE%97.png" alt="位置编码计算"></p>
+<p>例子:<img src="../assets/image-20241126190745844.png" alt="image-20241126190745844"></p>
+<p>pos表示词在序列中的位置:</p>
+<p>Are -&gt; 0      you -&gt; 1      OK -&gt; 2       ? -&gt; 3</p>
+<p>d表示位置编码向量的总维度数 此时是4</p>
+<p>i表示位置编码向量维度索引的一半</p>
+<p>可以得到位置编码:<img src="../assets/image-20241126191151315.png" alt="image-20241126191151315"></p>
+<p><strong>词嵌入 + 位置编码 极大丰富了输入特征</strong></p>
+<p>关于位置编码的一些问题:</p>
+<ol>
+<li>位置嵌入不会破坏词向量本身的信息吗?</li>
+</ol>
+<p>不会, 我们用远大于&quot;词向量 + 位置编码&quot;数量的训练数据和足够深的神经网络</p>
+<p><img src="../assets/image-20241126185318483.png" alt="image-20241126185318483"></p>
+<ol start="2">
+<li>若出现了&quot;碰撞&quot; 即一个词向量+该位置的位置编码 恰好等于 另一个词向量与此位置的位置编码 会怎样?</li>
+</ol>
+<p>无所谓 每个词都是高维表示 哪怕一个维度出现碰撞 其他维度也不同 所有维度同时出现碰撞的概率几乎为0</p>
+<p>代码实现Positional_Encoding</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Positional_Encoding的计算</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">PositionalEncoding</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_model</span><span class="p">,</span> <span class="n">drop_out</span><span class="p">,</span> <span class="n">max_len</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">super</span><span class="p">(</span><span class="n">PositionalEncoding</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span> <span class="o">=</span> <span class="n">drop_out</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="n">pe</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_len</span><span class="p">,</span> <span class="n">d_model</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_len</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d_model</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span><span class="p">(</span><span class="n">j</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">j</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">pe</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">i</span><span class="o">/</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">j</span><span class="o">/</span><span class="n">d_model</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">pe</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">i</span><span class="o">/</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">d_model</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pe</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;pe&#39;</span><span class="p">,</span> <span class="n">pe</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tens</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># tens: [seq_len, batch_size, d_model</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tens</span> <span class="o">=</span> <span class="n">tens</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pe</span><span class="p">[:</span><span class="n">tens</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="p">:]</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">tens</span><span class="p">)</span>
+</span></span></code></pre></div><hr>
+<h3 id="多头自注意力mulit-head-self-attention">多头自注意力(Mulit-head self attention)</h3>
+<h4 id="自注意力">自注意力</h4>
+<p>自注意力就是通过计算输入序列中各元素之间的关系（注意力），使得模型能够在处理某一个元素时，关注与之相关的其他元素，从而捕捉到更丰富的上下文信息。</p>
+<p>我们定义三个矩阵 $$W_q, W_k, W_v$$使用这三个矩阵分别对所有的字向量进行三次线性变换，于是所有的字向量又衍生出三个新的向量q, k, v。我们将所有的q向量拼成一个大矩阵，记作<strong>查询矩阵 Q</strong>，将所有的k向量拼成一个大矩阵，记作<strong>键矩阵 K</strong>，将所有的 v向量拼成一个大矩阵，记作<strong>值矩阵 V</strong></p>
+<p>$$即Q=W_q⋅x_i,  K=W_k⋅x_i,  V=W_v⋅x_i $$</p>
+<p>为了获得第一个字的注意力权重，我们需要用第一个字的<strong>查询向量</strong> q1 乘以<strong>键矩阵 K</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">            [0, 4, 2]
+</span></span><span class="line"><span class="cl">[1, 0, 2] x [1, 4, 3] = [2, 4, 4]
+</span></span><span class="line"><span class="cl">            [1, 0, 1]
+</span></span></code></pre></div><p>之后还需要将得到的值经过 softmax，使得它们的和为 1</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">softmax([2, 4, 4]) = [0.0, 0.5, 0.5]
+</span></span></code></pre></div><p>有了权重之后，将权重其分别乘以对应字的<strong>值向量</strong> v</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="mf">0.0</span> <span class="o">*</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="mf">0.5</span> <span class="o">*</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="mf">0.5</span> <span class="o">*</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">]</span>
+</span></span></code></pre></div><p>最后将这些<strong>权重化后的值向量求和</strong>，得到第一个字的输出</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">  [0.0, 0.0, 0.0]
+</span></span><span class="line"><span class="cl">+ [1.0, 4.0, 0.0]
+</span></span><span class="line"><span class="cl">+ [1.0, 3.0, 1.5]
+</span></span><span class="line"><span class="cl">-----------------
+</span></span><span class="line"><span class="cl">= [2.0, 7.0, 1.5]
+</span></span></code></pre></div><p>对其它的输入向量也执行相同的操作，即可得到通过 self-attention 后的所有输出</p>
+<p>以上是对单个字的处理, 对于一整个输出, 我们用矩阵进行处理, 一次计算得出全部结果</p>
+<p><img src="../assets/c7wF9x.png" alt="img">$$将 Q 和 K^T 相乘，然后除以 d_k，经过 softmax 以后再乘以 V 得到输出$$<img src="../assets/c7wk36.png" alt="img"></p>
+<h4 id="多头自注意力multi-head-attention">多头自注意力(Multi-Head Attention)</h4>
+<p>以上都是在介绍自注意力, 而多头自注意力就是定义多组Q, K, V, 让他们分别关注不同的上下文. 每组Q, K, V得到的结果相加即最终结果</p>
+<hr>
+<h3 id="残差连接与层归一化">残差连接与层归一化</h3>
+<p>上一步中我们得到的最终结果, 即各个字对每个字的注意力矩阵后, 将其与开始时做完位置编码的矩阵X相加. 这就是残差链接</p>
+<p>层归一化的作用是把神经网络中隐藏层归一为标准正态分布，以起到加快训练速度，加速收敛, 防止梯度爆炸与梯度消失的作用</p>
+<p>计算出矩阵中每列的均值和方差
+$$
+\mu = \frac{1}{d} \sum_{i=1}^{d} x_i
+\
+\sigma^2 = \frac{1}{d} \sum_{i=1}^{d} (x_i - \mu)^2
+$$</p>
+<p>然后用<strong>每一列</strong>的<strong>每一个元素</strong>减去<strong>这列的均值</strong>，再除以<strong>这列的标准差</strong>，从而得到归一化后的数值，加 ϵ 是为了防止分母为 0
+$$
+\hat{x}_i = \frac{x_i - \mu}{\sqrt{\sigma^2 + \epsilon}}
+$$
+至此完成矩阵的层归一化</p>
+<hr>
+<h3 id="前馈神经网络">前馈神经网络</h3>
+<p>Transformer中的前馈神经网络一般由两个线性变换（即全连接层）和一个激活函数组成. 用来增强模型表达能力以及提供非线性转换, 使模型能够学习更复杂的特征.</p>
+<p><strong>至此Encode的结构搭建完成</strong></p>
+<hr>
+<h2 id="decode的结构">Decode的结构</h2>
+<p>![Masked 多头自注意力 (1)](../assets/Masked 多头自注意力 (1).png)</p>
+<p>Decode 中和 Encode中有很多相同的部分, 比如 位置编码与词嵌入, 前馈神经网络, 残差连接等等, 这里不再重复, 重点放在Encode中没有的两个结构:</p>
+<ol>
+<li>Masked Multi-Head Self-Attention</li>
+<li>Encoder-Decoder Attention</li>
+</ol>
+<h3 id="masked-multi-head-self-attention">Masked Multi-Head Self-Attention</h3>
 
         
 
@@ -292,7 +397,7 @@ bigimg: [{src: &#34;\img\Transformer_a\transformer_a.png, desc: &#34;Transformer
     <ul class="share">
       
       <li>
-        <a href="//twitter.com/share?url=https%3a%2f%2fNPNB123.github.io%2fpost%2ftransformer%25E6%259E%25B6%25E6%259E%2584%25E7%259A%2584pytorch%25E5%25AE%259E%25E7%258E%25B0%2f&amp;text=Transformer%e6%9e%b6%e6%9e%84%e7%9a%84PyTorch%e5%ae%9e%e7%8e%b0&amp;via=" target="_blank" title="Share on Twitter">
+        <a href="//twitter.com/share?url=https%3a%2f%2fNPNB123.github.io%2fpost%2ftransformer%25E6%259E%25B6%25E6%259E%2584%25E7%259A%2584pytorch%25E5%25AE%259E%25E7%258E%25B0%2f&amp;text=Transformer%e7%9a%84PyTorch%e5%ae%9e%e7%8e%b0&amp;via=" target="_blank" title="Share on Twitter">
           <i class="fab fa-twitter"></i>
         </a>
       </li>
@@ -306,28 +411,28 @@ bigimg: [{src: &#34;\img\Transformer_a\transformer_a.png, desc: &#34;Transformer
   
       
       <li>
-        <a href="//reddit.com/submit?url=https%3a%2f%2fNPNB123.github.io%2fpost%2ftransformer%25E6%259E%25B6%25E6%259E%2584%25E7%259A%2584pytorch%25E5%25AE%259E%25E7%258E%25B0%2f&amp;title=Transformer%e6%9e%b6%e6%9e%84%e7%9a%84PyTorch%e5%ae%9e%e7%8e%b0" target="_blank" title="Share on Reddit">
+        <a href="//reddit.com/submit?url=https%3a%2f%2fNPNB123.github.io%2fpost%2ftransformer%25E6%259E%25B6%25E6%259E%2584%25E7%259A%2584pytorch%25E5%25AE%259E%25E7%258E%25B0%2f&amp;title=Transformer%e7%9a%84PyTorch%e5%ae%9e%e7%8e%b0" target="_blank" title="Share on Reddit">
           <i class="fab fa-reddit"></i>
         </a>
       </li>
   
       
       <li>
-        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fNPNB123.github.io%2fpost%2ftransformer%25E6%259E%25B6%25E6%259E%2584%25E7%259A%2584pytorch%25E5%25AE%259E%25E7%258E%25B0%2f&amp;title=Transformer%e6%9e%b6%e6%9e%84%e7%9a%84PyTorch%e5%ae%9e%e7%8e%b0" target="_blank" title="Share on LinkedIn">
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fNPNB123.github.io%2fpost%2ftransformer%25E6%259E%25B6%25E6%259E%2584%25E7%259A%2584pytorch%25E5%25AE%259E%25E7%258E%25B0%2f&amp;title=Transformer%e7%9a%84PyTorch%e5%ae%9e%e7%8e%b0" target="_blank" title="Share on LinkedIn">
           <i class="fab fa-linkedin"></i>
         </a>
       </li>
   
       
       <li>
-        <a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fNPNB123.github.io%2fpost%2ftransformer%25E6%259E%25B6%25E6%259E%2584%25E7%259A%2584pytorch%25E5%25AE%259E%25E7%258E%25B0%2f&amp;title=Transformer%e6%9e%b6%e6%9e%84%e7%9a%84PyTorch%e5%ae%9e%e7%8e%b0" target="_blank" title="Share on StumbleUpon">
+        <a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fNPNB123.github.io%2fpost%2ftransformer%25E6%259E%25B6%25E6%259E%2584%25E7%259A%2584pytorch%25E5%25AE%259E%25E7%258E%25B0%2f&amp;title=Transformer%e7%9a%84PyTorch%e5%ae%9e%e7%8e%b0" target="_blank" title="Share on StumbleUpon">
           <i class="fab fa-stumbleupon"></i>
         </a>
       </li>
   
       
       <li>
-        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fNPNB123.github.io%2fpost%2ftransformer%25E6%259E%25B6%25E6%259E%2584%25E7%259A%2584pytorch%25E5%25AE%259E%25E7%258E%25B0%2f&amp;description=Transformer%e6%9e%b6%e6%9e%84%e7%9a%84PyTorch%e5%ae%9e%e7%8e%b0" target="_blank" title="Share on Pinterest">
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fNPNB123.github.io%2fpost%2ftransformer%25E6%259E%25B6%25E6%259E%2584%25E7%259A%2584pytorch%25E5%25AE%259E%25E7%258E%25B0%2f&amp;description=Transformer%e7%9a%84PyTorch%e5%ae%9e%e7%8e%b0" target="_blank" title="Share on Pinterest">
           <i class="fab fa-pinterest"></i>
         </a>
       </li>
