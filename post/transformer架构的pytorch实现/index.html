@@ -65,7 +65,7 @@
   "headline": "Transformer的PyTorch实现",
   "description" : "介绍 Transformer 的结构及其PyTorch实现\n",
   "inLanguage" : "en",
-  "wordCount":  330 ,
+  "wordCount":  959 ,
   "datePublished" : "2024-12-08T19:28:21\u002b08:00",
   "dateModified" : "2024-12-08T19:28:21\u002b08:00",
   "image" : "https:\/\/NPNB123.github.io\/img\/avatar-icon.png",
@@ -238,7 +238,7 @@
   
   
   
-    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;330&nbsp;words
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;959&nbsp;words
   
   
     
@@ -382,6 +382,224 @@ $$
 <li>Encoder-Decoder Attention</li>
 </ol>
 <h3 id="masked-multi-head-self-attention">Masked Multi-Head Self-Attention</h3>
+<p>我们要求Decode需要遵循一定的时序规则. 即在每个词预测时应该仅依赖于之前的词，而不能看到未来的词为了满足这个需求, Masked Multi-Head Self-Attention会在计算注意力时, 对未来的词进行mask, 使得Decode在处理每个词时只能看到它之前的词, 而看不到后面的词, 确保生成模型的因果性.</p>
+<p>在前面的操作上和普通的多头自注意力都一样, 输入的字符串在经过词嵌入和位置编码后, 进行三次线性变换得到矩阵Q, K, V, 然后进行self-Attention操作得到  Scaled Scores . 接下来进行mask, 非常简单, 就是生成一个下三角全 0，上三角全为负无穷的矩阵，然后将其与 Scaled Scores 相加即可.<img src="../assets/U3FCQ0.png" alt="img"></p>
+<p>之后再做 softmax，就能将 - inf 变为 0，得到的这个矩阵即为每个字之间的权重</p>
+<hr>
+<h3 id="masked-encoder-decoder-attention">Masked Encoder-Decoder Attention</h3>
+<p>这部分的计算流程和Masked Multi-Head Self-Attention很像, 只是不需要对输入X进行三次线性变换, 而是Q就是Masked Multi-Head Self-Attention的输出, 而K, V时Encoder的输出.</p>
+<h2 id="完成">完成</h2>
+<p>在Transformer中, Encoder和Decoder都可以有多层叠在一起. 整个的内容可以被总结在这样的一张图中</p>
+<p><img src="../assets/c7w7rD.png" alt="img"></p>
+<h2 id="pytorch的简单实现">Pytorch的简单实现</h2>
+<p>在Pytorch中, 已经有了transformer模块. 所以实现一个transformer很简单.</p>
+<p>我们来实现一个简单的中译英模型及训练</p>
+<p>库引入及模型config</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">math</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">json</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">datetime</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">pickle</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch.optim</span> <span class="k">as</span> <span class="nn">optim</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch.utils.data</span> <span class="k">as</span> <span class="nn">Data</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">tiktoken._educational</span> <span class="kn">import</span> <span class="n">SimpleBytePairEncoding</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">tiktoken._educational_cn</span> <span class="kn">import</span> <span class="n">SimpleBytePairEncodingCN</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># model_config</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">d_model</span> <span class="o">=</span> <span class="mi">512</span>
+</span></span><span class="line"><span class="cl"><span class="n">d_ff</span> <span class="o">=</span> <span class="mi">2048</span>
+</span></span><span class="line"><span class="cl"><span class="n">n_layers</span> <span class="o">=</span> <span class="mi">4</span>
+</span></span><span class="line"><span class="cl"><span class="n">n_heads</span> <span class="o">=</span> <span class="mi">4</span>
+</span></span><span class="line"><span class="cl"><span class="n">drop_out</span> <span class="o">=</span> <span class="mf">0.1</span>
+</span></span><span class="line"><span class="cl"><span class="n">src_len</span> <span class="o">=</span> <span class="mi">512</span>
+</span></span><span class="line"><span class="cl"><span class="n">tgt_len</span> <span class="o">=</span> <span class="mi">512</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">max_len</span> <span class="o">=</span> <span class="mi">1024</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># train_config</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">50</span>
+</span></span><span class="line"><span class="cl"><span class="n">num_epoch</span> <span class="o">=</span> <span class="mi">12</span>
+</span></span><span class="line"><span class="cl"><span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">1e-4</span>
+</span></span><span class="line"><span class="cl"><span class="n">epoch_size_to_update</span> <span class="o">=</span> <span class="mi">6</span> <span class="c1"># scheduler的参数, 每epoch_size_to_update的epoch后更新lr, 更新为lr*gamma</span>
+</span></span><span class="line"><span class="cl"><span class="n">gamma</span> <span class="o">=</span> <span class="mf">0.1</span>
+</span></span><span class="line"><span class="cl"><span class="n">betas_1</span> <span class="o">=</span> <span class="mf">0.9</span>  <span class="c1"># 控制动量（momentum）的计算</span>
+</span></span><span class="line"><span class="cl"><span class="n">betas_2</span> <span class="o">=</span> <span class="mf">0.98</span>
+</span></span><span class="line"><span class="cl"><span class="n">PAD_ID</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># [PAD] 的 token序号</span>
+</span></span><span class="line"><span class="cl"><span class="n">steps</span> <span class="o">=</span> <span class="mi">5</span>   <span class="c1"># 每steps个batch输出一次损失</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># tokenizer</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">vocab_size</span> <span class="o">=</span> <span class="mi">4096</span>
+</span></span><span class="line"><span class="cl"><span class="n">pattern</span> <span class="o">=</span> <span class="s2">&#34;&#39;s|&#39;t|&#39;re|&#39;ve|&#39;m|&#39;ll|&#39;d| ?[\p</span><span class="si">{L}</span><span class="s2">]+| ?[\p</span><span class="si">{N}</span><span class="s2">]+| ?[^\s\p</span><span class="si">{L}</span><span class="s2">\p</span><span class="si">{N}</span><span class="s2">\[\]]+|\s+(?!\S)|\s+|\[.*?\]&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># device</span>
+</span></span><span class="line"><span class="cl"><span class="n">device</span> <span class="o">=</span> <span class="s2">&#34;cuda:0&#34;</span>
+</span></span></code></pre></div><p>tokenizer使用的是魔改版tiktoken中_educational里的SimpleBytePairEncoding</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&#34;cn_vocab.pkl&#34;</span><span class="p">,</span> <span class="s2">&#34;rb&#34;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cn_tokenized_data</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">cn_tokenizer</span> <span class="o">=</span> <span class="n">SimpleBytePairEncodingCN</span><span class="p">(</span><span class="n">pat_str</span><span class="o">=</span><span class="n">pattern</span><span class="p">,</span> <span class="n">mergeable_ranks</span><span class="o">=</span><span class="n">cn_tokenized_data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&#34;en_vocab.pkl&#34;</span><span class="p">,</span> <span class="s2">&#34;rb&#34;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">en_tokenized_data</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">en_tokenizer</span> <span class="o">=</span> <span class="n">SimpleBytePairEncoding</span><span class="p">(</span><span class="n">pat_str</span><span class="o">=</span><span class="n">pattern</span><span class="p">,</span> <span class="n">mergeable_ranks</span><span class="o">=</span><span class="n">en_tokenized_data</span><span class="p">)</span>
+</span></span></code></pre></div><p>加载训练模型的数据以及处理</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 处理数据集的数据, 加上[PAD]等特殊符号</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 加载训练模型数据</span>
+</span></span><span class="line"><span class="cl"><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&#34;test.jsonl&#34;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">datas</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">datasets</span> <span class="o">=</span> <span class="p">[</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">datas</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;load done </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">datasets</span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">pad_id</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># [START]: starting of decoding input</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># [EOS]: starting of decoding output</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># [PAD]: fill in blank sequence if current batch data size is short than time steps</span>
+</span></span><span class="line"><span class="cl"><span class="n">enc_inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">cn_tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&#34;chinese&#34;</span><span class="p">])</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">datasets</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">dec_inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">en_tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&#34;[START]&#34;</span><span class="o">+</span><span class="n">item</span><span class="p">[</span><span class="s2">&#34;english&#34;</span><span class="p">])</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">datasets</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">dec_outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">en_tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&#34;english&#34;</span><span class="p">]</span><span class="o">+</span><span class="s2">&#34;[EOS]&#34;</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">datasets</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;begin fill pad&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#fill with [PAD]</span>
+</span></span><span class="line"><span class="cl"><span class="n">pssd_enc_inputs</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="n">pssd_dec_inputs</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="n">pssd_dec_outputs</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="n">pssd_enc_inputs</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="n">enc</span> <span class="o">+</span> <span class="n">pad_id</span> <span class="o">*</span> <span class="p">(</span><span class="n">src_len</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">enc</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">enc</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">src_len</span> <span class="k">else</span> <span class="n">enc</span><span class="p">[:</span><span class="n">src_len</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">enc</span> <span class="ow">in</span> <span class="n">enc_inputs</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">pssd_dec_inputs</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dec</span> <span class="o">+</span> <span class="n">pad_id</span> <span class="o">*</span> <span class="p">(</span><span class="n">tgt_len</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">dec</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tgt_len</span> <span class="k">else</span> <span class="n">dec</span><span class="p">[:</span><span class="n">tgt_len</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">dec</span> <span class="ow">in</span> <span class="n">dec_inputs</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">pssd_dec_outputs</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dec</span> <span class="o">+</span> <span class="n">pad_id</span> <span class="o">*</span> <span class="p">(</span><span class="n">tgt_len</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">dec</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tgt_len</span> <span class="k">else</span> <span class="n">dec</span><span class="p">[:</span><span class="n">tgt_len</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">dec</span> <span class="ow">in</span> <span class="n">dec_outputs</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">pssd_enc_inputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">pssd_enc_inputs</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">pssd_dec_inputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">pssd_dec_inputs</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">pssd_dec_outputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">pssd_dec_outputs</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 配置dataloader</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">MyDataSet</span><span class="p">(</span><span class="n">Data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enc_inputs</span><span class="p">,</span> <span class="n">dec_inputs</span><span class="p">,</span> <span class="n">dec_outputs</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">super</span><span class="p">(</span><span class="n">MyDataSet</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="bp">self</span><span class="o">.</span><span class="n">enc_inputs</span> <span class="o">=</span> <span class="n">enc_inputs</span>
+</span></span><span class="line"><span class="cl">    <span class="bp">self</span><span class="o">.</span><span class="n">dec_inputs</span> <span class="o">=</span> <span class="n">dec_inputs</span>
+</span></span><span class="line"><span class="cl">    <span class="bp">self</span><span class="o">.</span><span class="n">dec_outputs</span> <span class="o">=</span> <span class="n">dec_outputs</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">enc_inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">enc_inputs</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">dec_inputs</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">dec_outputs</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">loader</span> <span class="o">=</span> <span class="n">Data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">MyDataSet</span><span class="p">(</span><span class="n">pssd_enc_inputs</span><span class="p">,</span> <span class="n">pssd_dec_inputs</span><span class="p">,</span> <span class="n">pssd_dec_outputs</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+</span></span></code></pre></div><p>然后是重点, 用torch.nn中的transformer来实现一个简单的transformer模型</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 模型结构</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Positional_Encoding计算</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">PositionalEncoding</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_model</span><span class="p">,</span> <span class="n">drop_out</span><span class="p">,</span> <span class="n">max_len</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">super</span><span class="p">(</span><span class="n">PositionalEncoding</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span> <span class="o">=</span> <span class="n">drop_out</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="n">pe</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">max_len</span><span class="p">,</span> <span class="n">d_model</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_len</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d_model</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span><span class="p">(</span><span class="n">j</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">j</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">pe</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">i</span><span class="o">/</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">j</span><span class="o">/</span><span class="n">d_model</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">pe</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">i</span><span class="o">/</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">d_model</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pe</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;pe&#39;</span><span class="p">,</span> <span class="n">pe</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tens</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># tens: [seq_len, batch_size, d_model</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tens</span> <span class="o">=</span> <span class="n">tens</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pe</span><span class="p">[:</span><span class="n">tens</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="p">:]</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">tens</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 构造模型</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">MyTransformer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">super</span><span class="p">(</span><span class="n">MyTransformer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 使用到了nn.Transformer</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">transformer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Transformer</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">d_model</span><span class="o">=</span><span class="n">d_model</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">dim_feedforward</span><span class="o">=</span><span class="n">d_ff</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">nhead</span><span class="o">=</span><span class="n">n_heads</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">num_encoder_layers</span><span class="o">=</span><span class="n">n_layers</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">num_decoder_layers</span><span class="o">=</span><span class="n">n_layers</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">enc_embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">vocab_size</span><span class="p">,</span> <span class="n">d_model</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">dec_embedding</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">vocab_size</span><span class="p">,</span> <span class="n">d_model</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">pos_emb</span> <span class="o">=</span> <span class="n">PositionalEncoding</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">drop_out</span><span class="p">,</span> <span class="n">max_len</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">projection</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">vocab_size</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enc_inputs</span><span class="p">,</span> <span class="n">dec_inputs</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;&#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">        enc_inputs: [batch_size, src_len]
+</span></span></span><span class="line"><span class="cl"><span class="s1">        dec_inputs: [batch_size, tgt_len]
+</span></span></span><span class="line"><span class="cl"><span class="s1">        &#39;&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">enc_inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">src_len</span> <span class="o">=</span> <span class="n">enc_inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tgt_len</span> <span class="o">=</span> <span class="n">dec_inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">enc_key_pad_mask</span> <span class="o">=</span> <span class="n">enc_inputs</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">dec_key_pad_mask</span> <span class="o">=</span> <span class="n">dec_inputs</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">enc_dec_key_padding_mask</span> <span class="o">=</span> <span class="n">enc_key_pad_mask</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">enc_mask</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">        <span class="n">enc_dec_mask</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">        <span class="n">dec_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer</span><span class="o">.</span><span class="n">generate_square_subsequent_mask</span><span class="p">(</span><span class="n">tgt_len</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">enc_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_emb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">enc_embedding</span><span class="p">(</span><span class="n">enc_inputs</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="n">dec_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_emb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dec_embedding</span><span class="p">(</span><span class="n">dec_inputs</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">dec_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">src</span><span class="o">=</span><span class="n">enc_input</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">tgt</span><span class="o">=</span><span class="n">dec_input</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">src_mask</span><span class="o">=</span><span class="n">enc_mask</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">tgt_mask</span><span class="o">=</span><span class="n">dec_mask</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">memory_mask</span><span class="o">=</span><span class="n">enc_dec_mask</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">src_key_padding_mask</span><span class="o">=</span><span class="n">enc_key_pad_mask</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">tgt_key_padding_mask</span><span class="o">=</span><span class="n">dec_key_pad_mask</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">memory_key_padding_mask</span><span class="o">=</span><span class="n">enc_dec_key_padding_mask</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">dec_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection</span><span class="p">(</span><span class="n">dec_output</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">dec_output</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dec_output</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</span></span></code></pre></div><p>加载训练用的损失函数和梯度下降算法</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">model</span> <span class="o">=</span> <span class="n">MyTransformer</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(</span><span class="n">ignore_index</span><span class="o">=</span><span class="n">PAD_ID</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">,</span> <span class="n">betas</span><span class="o">=</span><span class="p">(</span><span class="n">betas_1</span><span class="p">,</span> <span class="n">betas_2</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">scheduler</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">StepLR</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="n">epoch_size_to_update</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">)</span>
+</span></span></code></pre></div><p>开始训练</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 训练</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epoch</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">enc_inputs</span><span class="p">,</span> <span class="n">dec_inputs</span><span class="p">,</span> <span class="n">dec_outputs</span> <span class="ow">in</span> <span class="n">loader</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">enc_inputs</span><span class="p">,</span> <span class="n">dec_inputs</span><span class="p">,</span> <span class="n">dec_outputs</span> <span class="o">=</span> <span class="n">enc_inputs</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">dec_inputs</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">dec_outputs</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">enc_inputs</span><span class="p">,</span> <span class="n">dec_inputs</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">dec_outputs</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">    <span class="n">scheduler</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Learning Rate after epoch </span><span class="si">{</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">scheduler</span><span class="o">.</span><span class="n">get_last_lr</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><hr>
+<p>本文结束</p>
 
         
 
