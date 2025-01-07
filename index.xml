@@ -8,8 +8,15 @@
     <language>en</language>
     <managingEditor>huozerun@qq.com (NPNB)</managingEditor>
     <webMaster>huozerun@qq.com (NPNB)</webMaster>
-    <lastBuildDate>Sun, 08 Dec 2024 19:28:21 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 03 Jan 2025 15:34:43 +0800</lastBuildDate>
     <atom:link href="https://NPNB123.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Langchain实现简单RAG</title>
+      <link>https://NPNB123.github.io/post/langchain%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95rag/</link>
+      <pubDate>Fri, 03 Jan 2025 15:34:43 +0800</pubDate><author>huozerun@qq.com (NPNB)</author>
+      <guid>https://NPNB123.github.io/post/langchain%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95rag/</guid>
+      <description>&lt;p&gt;用Langchain实现简单的RAG及RAG原理介绍&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Transformer结构及简单pytorch实现</title>
       <link>https://NPNB123.github.io/post/transformer%E6%9E%B6%E6%9E%84%E7%9A%84pytorch%E5%AE%9E%E7%8E%B0/</link>
