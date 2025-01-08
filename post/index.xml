@@ -8,8 +8,15 @@
     <language>en</language>
     <managingEditor>huozerun@qq.com (NPNB)</managingEditor>
     <webMaster>huozerun@qq.com (NPNB)</webMaster>
-    <lastBuildDate>Fri, 03 Jan 2025 15:34:43 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 08 Jan 2025 23:03:07 +0800</lastBuildDate>
     <atom:link href="https://NPNB123.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>LoRA的原理</title>
+      <link>https://NPNB123.github.io/post/lora%E7%9A%84%E5%8E%9F%E7%90%86/</link>
+      <pubDate>Wed, 08 Jan 2025 23:03:07 +0800</pubDate><author>huozerun@qq.com (NPNB)</author>
+      <guid>https://NPNB123.github.io/post/lora%E7%9A%84%E5%8E%9F%E7%90%86/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Langchain实现简单RAG</title>
       <link>https://NPNB123.github.io/post/langchain%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95rag/</link>

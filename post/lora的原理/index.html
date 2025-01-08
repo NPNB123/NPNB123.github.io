@@ -12,9 +12,8 @@
  
 
 
-  
-  <meta name="description" content="欢迎来到我的博客!
-这是我的个人博客，在这里我分享一些技术文章、编程经验以及我的思考和学习过程。">
+      <title>LoRA的原理 - </title>
+
   <meta name="author" content="NPNB"/><script type="application/ld+json">
 {
     "@context": "http://schema.org",
@@ -35,18 +34,63 @@
   
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "item": {
+          "@id": "https:\/\/NPNB123.github.io\/",
+          "name": "home"
+        }
+    },{
+        "@type": "ListItem",
+        "position": 3,
+        "item": {
+          "@id": "https:\/\/NPNB123.github.io\/post\/lora%E7%9A%84%E5%8E%9F%E7%90%86\/",
+          "name": "Lo ra的原理"
+        }
+    }]
+}
+</script><script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "author": {
+    "name" : "NPNB"
+  },
+  "headline": "LoRA的原理",
+  "description" : "",
+  "inLanguage" : "en",
+  "wordCount":  0 ,
+  "datePublished" : "2025-01-08T23:03:07\u002b08:00",
+  "dateModified" : "2025-01-08T23:03:07\u002b08:00",
+  "image" : "https:\/\/NPNB123.github.io\/img\/avatar-icon.png",
+  "keywords" : [ "" ],
+  "mainEntityOfPage" : "https:\/\/NPNB123.github.io\/post\/lora%E7%9A%84%E5%8E%9F%E7%90%86\/",
+  "publisher" : {
+    "@type": "Organization",
+    "name" : "https:\/\/NPNB123.github.io\/",
+    "logo" : {
+        "@type" : "ImageObject",
+        "url" : "https:\/\/NPNB123.github.io\/img\/avatar-icon.png",
+        "height" :  60 ,
+        "width" :  60
+    }
+  }
+}
+</script>
 
-<meta property="og:title" content="NPNB&#39;s Blog" />
-<meta property="og:description" content="欢迎来到我的博客!
-这是我的个人博客，在这里我分享一些技术文章、编程经验以及我的思考和学习过程。">
+
+<meta property="og:title" content="LoRA的原理" />
 <meta property="og:image" content="https://NPNB123.github.io/img/avatar-icon.png" />
-<meta property="og:url" content="https://NPNB123.github.io/" />
+<meta property="og:url" content="https://NPNB123.github.io/post/lora%E7%9A%84%E5%8E%9F%E7%90%86/" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="NPNB&#39;s Blog" />
 
-  <meta name="twitter:title" content="NPNB&#39;s Blog" />
-  <meta name="twitter:description" content="欢迎来到我的博客!
-这是我的个人博客，在这里我分享一些技术文章、编程经验以及我的思考和学习过程。">
+  <meta name="twitter:title" content="LoRA的原理" />
   <meta name="twitter:image" content="https://NPNB123.github.io/img/avatar-icon.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <link href='https://NPNB123.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
@@ -177,53 +221,14 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            <div class="page-heading">
+            <div class="post-heading">
               
-                <h1>NPNB&#39;s Blog</h1>
-              
-              
-                <hr class="small">
+                <h1>LoRA的原理</h1>
               
               
-                
-                  <span class="page-subheading">Summary and Reflection on LLM by NPNB</span>
-                
               
               
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  
-  </header>
-
-
-    
-  <div role="main" class="container">
-    <div class="row">
-      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-        
-          <div class="well">
-            <h3 id="欢迎来到我的博客">欢迎来到我的博客!</h3>
-<p>这是我的个人博客，在这里我分享一些技术文章、编程经验以及我的思考和学习过程。</p>
-
-          </div>
-        
-
-        <div class="posts-list">
-          
-          
-            <article class="post-preview">
-    <a href="https://NPNB123.github.io/post/lora%E7%9A%84%E5%8E%9F%E7%90%86/">
-        <h2 class="post-title">LoRA的原理</h2>
-        
-        
-        
-    </a>
-
-    <p class="post-meta">
-        <span class="post-meta">
+                <span class="post-meta">
   
   
   <i class="fas fa-calendar"></i>&nbsp;Posted on 01/08/2025
@@ -241,111 +246,114 @@
 </span>
 
 
-    </p>
-    <div class="post-entry">
-        
-        
-        
-    </div>
-
-    
-
-</article>
-          
-            <article class="post-preview">
-    <a href="https://NPNB123.github.io/post/langchain%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95rag/">
-        <h2 class="post-title">Langchain实现简单RAG</h2>
-        
-        
-        
-    </a>
-
-    <p class="post-meta">
-        <span class="post-meta">
-  
-  
-  <i class="fas fa-calendar"></i>&nbsp;Posted on 01/03/2025
-  
-  
-  
-    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;252&nbsp;words
-  
-  
-    
-      &nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;NPNB
-    
-  
-  
-</span>
-
-
-    </p>
-    <div class="post-entry">
-        
-        <p>用Langchain实现简单的RAG及RAG原理介绍</p>
-        <a href="https://NPNB123.github.io/post/langchain%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95rag/" class="post-read-more">[Read More]</a>
-        
-    </div>
-
-    
-
-</article>
-          
-            <article class="post-preview">
-    <a href="https://NPNB123.github.io/post/transformer%E6%9E%B6%E6%9E%84%E7%9A%84pytorch%E5%AE%9E%E7%8E%B0/">
-        <h2 class="post-title">Transformer结构及简单pytorch实现</h2>
-        
-        
-        
-    </a>
-
-    <p class="post-meta">
-        <span class="post-meta">
-  
-  
-  <i class="fas fa-calendar"></i>&nbsp;Posted on 12/08/2024
-  
-  
-  
-    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;959&nbsp;words
-  
-  
-    
-      &nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;NPNB
-    
-  
-  
-</span>
-
-
-    </p>
-    <div class="post-entry">
-        
-        <p>介绍 Transformer 的结构及一个简单的PyTorch实现和训练代码</p>
-        <a href="https://NPNB123.github.io/post/transformer%E6%9E%B6%E6%9E%84%E7%9A%84pytorch%E5%AE%9E%E7%8E%B0/" class="post-read-more">[Read More]</a>
-        
-    </div>
-
-    
-
-</article>
-          
+              
+            </div>
+          </div>
         </div>
-
-        
       </div>
     </div>
+  
+  </header>
+
+
+    
+<div class="container" role="main">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+        
+
+        
+
+        
+            <hr/>
+            <section id="social-share">
+              <div class="list-inline footer-links">
+                
+
+<div class="share-box" aria-hidden="true">
+    <ul class="share">
+      
+      <li>
+        <a href="//twitter.com/share?url=https%3a%2f%2fNPNB123.github.io%2fpost%2flora%25E7%259A%2584%25E5%258E%259F%25E7%2590%2586%2f&amp;text=LoRA%e7%9a%84%e5%8e%9f%e7%90%86&amp;via=" target="_blank" title="Share on Twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fNPNB123.github.io%2fpost%2flora%25E7%259A%2584%25E5%258E%259F%25E7%2590%2586%2f" target="_blank" title="Share on Facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//reddit.com/submit?url=https%3a%2f%2fNPNB123.github.io%2fpost%2flora%25E7%259A%2584%25E5%258E%259F%25E7%2590%2586%2f&amp;title=LoRA%e7%9a%84%e5%8e%9f%e7%90%86" target="_blank" title="Share on Reddit">
+          <i class="fab fa-reddit"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fNPNB123.github.io%2fpost%2flora%25E7%259A%2584%25E5%258E%259F%25E7%2590%2586%2f&amp;title=LoRA%e7%9a%84%e5%8e%9f%e7%90%86" target="_blank" title="Share on LinkedIn">
+          <i class="fab fa-linkedin"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fNPNB123.github.io%2fpost%2flora%25E7%259A%2584%25E5%258E%259F%25E7%2590%2586%2f&amp;title=LoRA%e7%9a%84%e5%8e%9f%e7%90%86" target="_blank" title="Share on StumbleUpon">
+          <i class="fab fa-stumbleupon"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fNPNB123.github.io%2fpost%2flora%25E7%259A%2584%25E5%258E%259F%25E7%2590%2586%2f&amp;description=LoRA%e7%9a%84%e5%8e%9f%e7%90%86" target="_blank" title="Share on Pinterest">
+          <i class="fab fa-pinterest"></i>
+        </a>
+      </li>
+    </ul>
   </div>
+  
+
+              </div>
+            </section>
+        
+
+        
+          
+
+          
+        
+      </article>
 
       
-    <div class="page-meta">
-  
-  
-  
+        <ul class="pager blog-pager">
+          
+            <li class="previous">
+              <a href="https://NPNB123.github.io/post/langchain%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95rag/" data-toggle="tooltip" data-placement="top" title="Langchain实现简单RAG">&larr; Previous Post</a>
+            </li>
+          
+          
+        </ul>
+      
+
+
+      
+      
+      
+      
+      
+        
+      
+
+    </div>
+  </div>
 </div>
 
-
-  <footer>
+      <footer>
   <div class="container">
     
     <div class="row">
@@ -373,15 +381,6 @@
                 </a>
               </li>
           
-          
-          <li>
-            <a href="/index.xml" title="RSS">
-              <span class="fa-stack fa-lg">
-                <i class="fas fa-circle fa-stack-2x"></i>
-                <i class="fas fa-rss fa-stack-1x fa-inverse"></i>
-              </span>
-            </a>
-          </li>
           
           
         </ul>
