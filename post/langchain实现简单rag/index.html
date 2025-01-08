@@ -65,7 +65,7 @@
   "headline": "Langchain实现简单RAG",
   "description" : "用Langchain实现简单的RAG及RAG原理介绍\n",
   "inLanguage" : "en",
-  "wordCount":  229 ,
+  "wordCount":  252 ,
   "datePublished" : "2025-01-03T15:34:43\u002b08:00",
   "dateModified" : "2025-01-03T15:34:43\u002b08:00",
   "image" : "https:\/\/NPNB123.github.io\/img\/avatar-icon.png",
@@ -238,7 +238,7 @@
   
   
   
-    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;229&nbsp;words
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;252&nbsp;words
   
   
     
@@ -265,6 +265,17 @@
     <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
       <article role="main" class="blog-post">
         <p>用Langchain实现简单的RAG及RAG原理介绍</p>
+<p>​	在 LLM 已经具备了较强能力的基础上，仍然存在以下问题：</p>
+<ol>
+<li>**幻觉问题 **：LLM 文本生成的底层原理是基于概率的形式，因此会不可避免地 产生“一本正经的胡说八道”的情况</li>
+<li><strong>时效性问题</strong> ：LLM 的规模越大，大模型训练的成本越高，周期也
+就越长。那么具有时效性的数 据也就无法参与训练，所以也就无
+法直接回答时效性相关的问题</li>
+<li><strong>数据安全问题</strong>：通用的 LLM 没有企业内部数据和用户数据，那
+么企业想要在保证安全的前提下 使用 LLM，最好的方式就是把数
+据全部放在本地，企业数据的业务计算全部在本地完成。而在 线
+的大模型仅仅完成一个归纳的功能</li>
+</ol>
 <p>​	RAG（Retrieval Augmented Generation，检索增强生成）是一种结合生成式模型和检索技术的创新方法。它充分利用了生成式大模型在内容创造性和多样性方面的优势，同时融入了传统检索技术的高度可控性和准确性。</p>
 <p>​	这种方法通过检索相关信息为生成模型提供支持，使其在生成内容时能够更精准地参考外部知识库或实时数据，从而提升生成结果的相关性和可信度。RAG技术在许多场景中展现了独特的优势，例如问答系统、知识获取和内容生成等，为解决开放领域生成中常见的准确性问题提供了强有力的工具。</p>
 <h2 id="rag的基本步骤">RAG的基本步骤</h2>
@@ -309,10 +320,10 @@
 </span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="si">{input}</span><span class="s2">
 </span></span></span><span class="line"><span class="cl"><span class="s2">
 </span></span></span><span class="line"><span class="cl"><span class="s2">    请根据以下参考信息提供答案：
-</span></span></span><span class="line"><span class="cl"><span class="s2">    ```
+</span></span></span><span class="line"><span class="cl"><span class="s2">	~~~
 </span></span></span><span class="line"><span class="cl"><span class="s2">    </span><span class="si">{context}</span><span class="s2">
-</span></span></span><span class="line"><span class="cl"><span class="s2">    ```
-</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    ~~~
+</span></span></span><span class="line"><span class="cl"><span class="s2">    
 </span></span></span><span class="line"><span class="cl"><span class="s2">    答案需清晰、简洁且适合阅读。
 </span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">])</span>
