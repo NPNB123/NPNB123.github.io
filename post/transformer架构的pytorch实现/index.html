@@ -65,7 +65,7 @@
   "headline": "Transformer结构及简单pytorch实现",
   "description" : "介绍 Transformer 的结构及一个简单的PyTorch实现和训练代码\n",
   "inLanguage" : "en",
-  "wordCount":  959 ,
+  "wordCount":  957 ,
   "datePublished" : "2024-12-08T19:28:21\u002b08:00",
   "dateModified" : "2024-12-08T19:28:21\u002b08:00",
   "image" : "https:\/\/NPNB123.github.io\/img\/avatar-icon.png",
@@ -238,7 +238,7 @@
   
   
   
-    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;959&nbsp;words
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;957&nbsp;words
   
   
     
@@ -521,11 +521,11 @@ $$
 </span></span><span class="line"><span class="cl">                    <span class="n">pe</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">i</span><span class="o">/</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">j</span><span class="o">/</span><span class="n">d_model</span><span class="p">)))</span>
 </span></span><span class="line"><span class="cl">                <span class="k">else</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">                    <span class="n">pe</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">i</span><span class="o">/</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">d_model</span><span class="p">)))</span>
-</span></span><span class="line"><span class="cl">        <span class="n">pe</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pe</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">&#39;pe&#39;</span><span class="p">,</span> <span class="n">pe</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tens</span><span class="p">):</span>
 </span></span><span class="line"><span class="cl">        <span class="c1"># tens: [seq_len, batch_size, d_model</span>
-</span></span><span class="line"><span class="cl">        <span class="n">tens</span> <span class="o">=</span> <span class="n">tens</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pe</span><span class="p">[:</span><span class="n">tens</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="p">:]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tens</span> <span class="o">=</span> <span class="n">tens</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pe</span><span class="p">[:</span><span class="n">tens</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)]</span>
 </span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">tens</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">    
 </span></span><span class="line"><span class="cl">
