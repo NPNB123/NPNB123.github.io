@@ -8,8 +8,15 @@
     <language>en</language>
     <managingEditor>huozerun@qq.com (NPNB)</managingEditor>
     <webMaster>huozerun@qq.com (NPNB)</webMaster>
-    <lastBuildDate>Sat, 18 Jan 2025 18:12:37 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 19 Jan 2025 00:07:15 +0800</lastBuildDate>
     <atom:link href="https://NPNB123.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>基于MindIE和910B的Qwen模型部署实践</title>
+      <link>https://NPNB123.github.io/post/%E5%9F%BA%E4%BA%8Emindie%E5%92%8C910b%E7%9A%84qwen%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E5%AE%9E%E8%B7%B5/</link>
+      <pubDate>Sun, 19 Jan 2025 00:07:15 +0800</pubDate><author>huozerun@qq.com (NPNB)</author>
+      <guid>https://NPNB123.github.io/post/%E5%9F%BA%E4%BA%8Emindie%E5%92%8C910b%E7%9A%84qwen%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E5%AE%9E%E8%B7%B5/</guid>
+      <description>&lt;p&gt;在华为**Atlas800服务器（型号：9000）**上用MindIE进行Qwen2.5 7B模型部署&lt;/p&gt;</description>
+    </item>
     <item>
       <title>RAG总结</title>
       <link>https://NPNB123.github.io/post/rag%E6%80%BB%E7%BB%93/</link>
