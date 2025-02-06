@@ -45,7 +45,7 @@
   <meta name="twitter:image" content="https://NPNB123.github.io/img/avatar-icon.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <link href='https://NPNB123.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
-  <meta name="generator" content="Hugo 0.141.0">
+  <meta name="generator" content="Hugo 0.143.1">
   <link rel="alternate" href="https://NPNB123.github.io/index.xml" type="application/rss+xml" title="NPNB&#39;s Blog"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css" integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI" crossorigin="anonymous">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" integrity="sha384-h/hnnw1Bi4nbpD6kE7nYfCXzovi622sY5WBxww8ARKwpdLj5kUWjRuyiXaD1U2JT" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous"><link rel="stylesheet" href="https://NPNB123.github.io/css/main.css" /><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
@@ -182,7 +182,7 @@
                 <span class="post-meta">
   
   
-  <i class="fas fa-calendar"></i>&nbsp;Posted on 01/19/2025
+  <i class="fas fa-calendar"></i>&nbsp;Posted on 02/06/2025
   
   
   
@@ -213,6 +213,241 @@
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
         
         <div class="posts-list">
+          
+            <article class="post-preview">
+    <a href="https://NPNB123.github.io/post/%E5%9F%BA%E4%BA%8Emindie%E5%9C%A8910b%E5%B9%B3%E5%8F%B0%E9%83%A8%E7%BD%B2deepseek-r1%E8%92%B8%E9%A6%8F%E6%A8%A1%E5%9E%8B/">
+        <h2 class="post-title">基于MindIE在910B平台部署DeepSeek R1蒸馏模型</h2>
+        
+        
+        
+    </a>
+
+    <p class="post-meta">
+        <span class="post-meta">
+  
+  
+  <i class="fas fa-calendar"></i>&nbsp;Posted on 02/06/2025
+  
+  
+  
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;402&nbsp;words
+  
+  
+    
+      &nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;NPNB
+    
+  
+  
+</span>
+
+
+    </p>
+    <div class="post-entry">
+        
+        <p><strong>服务器参数:</strong></p>
+<ul>
+<li>CPU: 4 × HUAWEI Kunpeng 920 5250</li>
+<li>NPU: 8 × Ascend 910B 64GB</li>
+<li>架构：Arm</li>
+<li>系统: EulerOS 2.0 SP8</li>
+</ul>
+<p><strong>软件信息:</strong></p>
+<ul>
+<li>
+<p>Software Version : 23.0.0</p>
+</li>
+<li>
+<p>Firmware Version : 7.1.0.3.220</p>
+</li>
+<li>
+<p>CANN : 8.0.T60</p>
+</li>
+<li>
+<p>Kernal : 8.0.T60</p>
+</li>
+<li>
+<p>nnal : 8.0.T60</p>
+</li>
+<li>
+<p>mindie : 1.0.T70</p>
+</li>
+<li>
+<p>mindie-atb : 1.0.T70</p>
+</li>
+<li>
+<p>python : 3.10.13</p>
+</li>
+</ul>
+<p>因为使用了Docker容器, docker中系统为Ubuntu 18.04.6 LTS</p>
+<h2 id="配置环境">配置环境</h2>
+<h3 id="各软件的下载路径">各软件的下载路径</h3>
+<p>以Euleros为例</p>
+<p>驱动 ：<a href="https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2023.0.0/Ascend-hdk-910-npu-driver_23.0.0_linux-aarch64.run">下载地址</a></p>
+<p>固件：<a href="https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2023.0.0/Ascend-hdk-910-npu-firmware_7.1.0.3.220.run">下载地址</a></p>
+<p>CANN：<a href="https://wyz.obs.cn-north-300.hblfrgzn.com/install_pkgs/mindie-1.0.t70/Ascend-cann-toolkit_8.0.T60_linux-aarch64.run">下载地址</a></p>
+<p>kernel：<a href="https://wyz.obs.cn-north-300.hblfrgzn.com/install_pkgs/mindie-1.0.t70/Ascend-cann-kernels-910_8.0.T60_linux-aarch64.run">下载地址</a></p>
+<p>nnal：<a href="https://wyz.obs.cn-north-300.hblfrgzn.com/install_pkgs/mindie-1.0.t70/Ascend-cann-nnal_8.0.T60_linux-aarch64.run">下载地址</a></p>
+<p>mindie：<a href="https://wyz.obs.cn-north-300.hblfrgzn.com/install_pkgs/mindie-1.0.t70/Ascend-mindie_1.0.T70_linux-aarch64.run">下载地址</a></p>
+<p>mindie-atb：<a href="https://wyz.obs.cn-north-300.hblfrgzn.com/install_pkgs/mindie-1.0.t70/Ascend-mindie-atb-models_1.0.T70_linux-aarch64_py310_torch2.1.0-abi0.tar.gz">下载地址</a></p>
+<p><strong>安装系统依赖</strong>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt install -y gcc g++ make cmake unzip zlib1g-dev libffi-dev libssl-dev pciutils net-tools libsqlite3-dev liblapack-dev gfortran python3-dev
+</span></span></code></pre></div><p><strong>安装驱动和固件</strong>:</p>
+<p>注意先安装驱动, 再安装固件</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 开始安装固件</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 进入软件包所在目录，执行如下命令增加执行权限和校验软件包的一致性和完整性。</span>
+</span></span><span class="line"><span class="cl">chmod +x Ascend-hdk-910-npu-driver_23.0.0_linux-aarch64.run
+</span></span><span class="line"><span class="cl">./Ascend-hdk-910-npu-driver_23.0.0_linux-aarch64.run --check
+</span></span><span class="line"><span class="cl"><span class="c1"># 出现如下回显信息，表示软件包校验成功</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Verifying archive integrity...  100%   SHA256 checksums are OK. All good.</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 安装驱动</span>
+</span></span><span class="line"><span class="cl">./Ascend-hdk-910-npu-driver_23.0.0_linux-aarch64.run --full --install-for-all
+</span></span><span class="line"><span class="cl"><span class="c1"># 若系统出现如下关键回显信息，则表示驱动安装成功</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Driver package installed successfully!</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 开始安装固件</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 进入软件包所在目录，执行如下命令增加执行权限和校验软件包的一致性和完整性。</span>
+</span></span><span class="line"><span class="cl">chmod +x Ascend-hdk-910-npu-firmware_7.1.0.3.220.run
+</span></span><span class="line"><span class="cl">./Ascend-hdk-910-npu-firmware_7.1.0.3.220.run --check
+</span></span><span class="line"><span class="cl"><span class="c1"># 出现如下回显信息，表示软件包校验成功</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Verifying archive integrity...  100%   SHA256 checksums are OK. All good.</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 安装固件</span>
+</span></span><span class="line"><span class="cl">./Ascend-hdk-910-npu-firmware_7.1.0.3.220.run --full
+</span></span><span class="line"><span class="cl"><span class="c1"># 若系统出现如下关键回显信息，表示固件安装成功</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Firmware package installed successfully! Reboot now or after driver installation for the installation/upgrade to take effect</span>
+</span></span></code></pre></div><p>驱动和固件安装成功后需要<strong>重启服务器</strong>，使安装生效。</p>
+<p>可以使用 npu-smi info 查看安装好的驱动信息。</p>
+<p><img src="../assets/image-20250119011104326-1738837482828-1.png" alt="image-20250119011104326"></p>
+<p><strong>安装CANN、kernel、nnal、mindie</strong>:</p>
+<p>CANN:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 在软件包所在目录，执行命令增加执行权限和校验软件包的一致性和完整性, 然后安装。</span>
+</span></span><span class="line"><span class="cl">chmod +x Ascend-cann-toolkit_8.0.T60_linux-aarch64.run
+</span></span><span class="line"><span class="cl">./Ascend-cann-toolkit_8.0.T60_linux-aarch64.run --check
+</span></span><span class="line"><span class="cl">./Ascend-cann-toolkit_8.0.T60_linux-aarch64.run --install
+</span></span></code></pre></div><p>kernel:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 在软件包所在目录，执行命令增加执行权限和校验软件包的一致性和完整性, 然后安装。</span>
+</span></span><span class="line"><span class="cl">chmod +x Ascend-cann-kernels-910_8.0.T60_linux-aarch64.run
+</span></span><span class="line"><span class="cl">./Ascend-cann-kernels-910_8.0.T60_linux-aarch64.run --check
+</span></span><span class="line"><span class="cl">./Ascend-cann-kernels-910_8.0.T60_linux-aarch64.run --install
+</span></span></code></pre></div><p>nnal:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 在软件包所在目录，执行命令增加执行权限和校验软件包的一致性和完整性, 然后安装。</span>
+</span></span><span class="line"><span class="cl">chmod +x Ascend-cann-nnal_8.0.T60_linux-aarch64.run
+</span></span><span class="line"><span class="cl">./Ascend-cann-nnal_8.0.T60_linux-aarch64.run --check
+</span></span><span class="line"><span class="cl">./Ascend-cann-nnal_8.0.T60_linux-aarch64.run --install
+</span></span></code></pre></div><p>mindie:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 在软件包所在目录，执行命令增加执行权限和校验软件包的一致性和完整性, 然后安装。</span>
+</span></span><span class="line"><span class="cl">chmod +x Ascend-mindie_1.0.T70_linux-aarch64.run
+</span></span><span class="line"><span class="cl">./Ascend-mindie_1.0.T70_linux-aarch64.run --check
+</span></span><span class="line"><span class="cl">./Ascend-mindie_1.0.T70_linux-aarch64.run --install
+</span></span></code></pre></div><h3 id="获取源码">获取源码:</h3>
+<p>将在上方下载的mindie-atb压缩包放在/otp/mindie-atb/的路径下解压缩</p>
+<p><code>tar -zxvf Ascend-mindie-atb-models_1.0.T70_linux-aarch64_py310_torch2.1.0-abi0.tar.gz</code></p>
+<p><strong>设置环境变量</strong></p>
+<p>使用source更新使环境变量生效</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">source</span> /usr/local/Ascend/ascend-toolkit/set_env.sh
+</span></span><span class="line"><span class="cl"><span class="nb">source</span> /usr/local/Ascend/nnal/atb/set_env.sh
+</span></span><span class="line"><span class="cl"><span class="nb">source</span> /usr/local/Ascend/mindie/set_env.sh
+</span></span><span class="line"><span class="cl"><span class="nb">source</span> /opt/mindie-atb/set_env.sh
+</span></span></code></pre></div><p>关键的python库的版本:</p>
+<ul>
+<li>torch==2.1.0</li>
+<li>torch-npu==2.1.0.post6</li>
+<li>transformers==4.43.1</li>
+<li>tokenizers==0.19.1</li>
+</ul>
+<p>​	把微调好并合并的DeepSeek-R1-Distill-Qwen-32B参数文件通过华为的OBS桶下载到服务器中</p>
+<p>通过</p>
+<p><code>chown -R root:root DeepSeek-R1-Distill-Qwen-32B</code></p>
+<p><code>chmod -R 750 DeepSeek-R1-Distill-Qwen-32B</code></p>
+<p>修改文件权限</p>
+<p>进入DeepSeek-R1-Distill-Qwen-32B, 修改其中的config.json文件, 将其中的torch_dtype项改为float16, 如图中箭头所指的项</p>
+<!-- raw HTML omitted -->
+<h3 id="进行mindie-servier服务推理">进行mindie-servier服务推理</h3>
+<p><strong>修改mindie-servier配置:</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 进入到mindie-server目录下；</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /usr/local/Ascend/mindie/latest/mindie-service 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 修改 config.json 文件，首先打开该文件</span>
+</span></span><span class="line"><span class="cl">vi conf/config.json 
+</span></span><span class="line"><span class="cl"><span class="c1"># 然后进行修改，如下图所示</span>
+</span></span></code></pre></div><ul>
+<li>httpsEnable 设为false</li>
+<li>numDeviceIds 设为你想使用的卡的id</li>
+<li>worldSize 设为卡数</li>
+<li>modelWeightPath设为你的</li>
+</ul>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p>这些参数可以在<a href="https://www.hiascend.com/document/detail/zh/mindie/10RC3/mindieservice/servicedev/mindie_service0285.html">配置参数说明-MindIE Server-MindIE Service组件-MindIE Service开发指南-服务化集成部署-MindIE1.0.RC3开发文档-昇腾社区</a>找到说明</p>
+<p><strong>启动 mindie-server 服务</strong></p>
+<p>根据上面的config.json可以看到, 服务会启动在 http://127.0.0.1:1025 ，用户可通过在config.json文件下修改ipAddress和port参数来自定义启动IP地址与端口号。</p>
+<p>启动命令:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd /usr/local/Ascend/mindie/latest/mindie-service
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 启动服务并将日志输入到 output.log文件中
+</span></span><span class="line"><span class="cl">nohup ./bin/mindieservice_daemon &gt; output.log 2&gt;&amp;1 &amp;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 可通过如下命令查看日志
+</span></span><span class="line"><span class="cl">tail -f output.log 
+</span></span></code></pre></div><p>启动, 如果有以下内容则启动成功</p>
+<p><img src="./D:/LLM_download/KangYang_data/DeepSeek/assets/image-20250206144231996.png" alt="image-20250206144231996"></p>
+<p>浏览器会进行 CORS 检查, 浏览器向不同源（协议、域名、端口任一不同）的服务器发起请求时，会受到 CORS 策略的约束.为了避免跨域资源共享策略. 我们让大模型运行关闭端口1025上, 并写一个脚本接受开放端口35781得到的请求并转发给端口1025, 并把响应返回给35781的请求</p>
+<p>脚本内容如下:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">stream_with_context</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask_cors</span> <span class="kn">import</span> <span class="n">CORS</span>
+</span></span><span class="line"><span class="cl"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">CORS</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 配置信息</span>
+</span></span><span class="line"><span class="cl"><span class="n">MODEL_API_URL</span> <span class="o">=</span> <span class="s2">&#34;http://localhost:1025/v1/chat/completions&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">FLASK_HOST</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">FLASK_PORT</span> <span class="o">=</span> <span class="mi">35781</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/v1/chat/completions&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">chat_completions</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 获取原始请求数据</span>
+</span></span><span class="line"><span class="cl">    <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 向大模型发起流式请求</span>
+</span></span><span class="line"><span class="cl">        <span class="n">model_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">MODEL_API_URL</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">stream</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># 保持流式传输</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 定义流式响应生成器</span>
+</span></span><span class="line"><span class="cl">        <span class="k">def</span> <span class="nf">generate</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">model_response</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">chunk</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">yield</span> <span class="n">chunk</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 返回流式响应</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">stream_with_context</span><span class="p">(</span><span class="n">generate</span><span class="p">()),</span>
+</span></span><span class="line"><span class="cl">            <span class="n">content_type</span><span class="o">=</span><span class="n">model_response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="p">{</span><span class="s2">&#34;error&#34;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&#34;Model server connection failed: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">},</span> <span class="mi">500</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">FLASK_HOST</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">FLASK_PORT</span><span class="p">)</span>
+</span></span></code></pre></div><p>如此我就可以通过公网ip和开放端口调用服务器上运行的大模型</p>
+<p><strong>postman测试</strong></p>
+<p>如图, 调用没问题</p>
+<p><img src="../assets/image-20250206181726585.png" alt="image-20250206181726585"></p>
+<p><strong>联调测试大模型能力</strong></p>
+<p>大模型能正常调用且具有思考推理能力</p>
+<p><img src="../assets/d7a9426704ff0a8bbef54d5d4251690.png" alt="d7a9426704ff0a8bbef54d5d4251690"></p>
+<p><em>本篇文章完</em></p>
+        
+    </div>
+
+    
+
+</article>
           
             <article class="post-preview">
     <a href="https://NPNB123.github.io/post/%E5%9F%BA%E4%BA%8Emindie%E5%92%8C910b%E7%9A%84qwen%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E5%AE%9E%E8%B7%B5/">
@@ -269,7 +504,7 @@
   
   
   
-    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;467&nbsp;words
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;477&nbsp;words
   
   
     
@@ -474,7 +709,7 @@
         </p>
         
         <p class="credits theme-by text-muted">
-          <a href="https://gohugo.io">Hugo v0.141.0</a> powered &nbsp;&bull;&nbsp; Theme <a href="https://github.com/halogenica/beautifulhugo">Beautiful Hugo</a> adapted from <a href="https://deanattali.com/beautiful-jekyll/">Beautiful Jekyll</a>
+          <a href="https://gohugo.io">Hugo v0.143.1</a> powered &nbsp;&bull;&nbsp; Theme <a href="https://github.com/halogenica/beautifulhugo">Beautiful Hugo</a> adapted from <a href="https://deanattali.com/beautiful-jekyll/">Beautiful Jekyll</a>
           
         </p>
       </div>
