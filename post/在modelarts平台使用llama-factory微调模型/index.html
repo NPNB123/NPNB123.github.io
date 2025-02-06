@@ -14,130 +14,7 @@
 
       <title>在ModelArts平台使用LLama Factory微调模型 - </title>
 
-  <meta name="description" content="在ModelArts平台使用LLama-Factory微调模型
-准备notebook服务
-
-注册镜像
-
-在HCS Online-&gt; ModelArts -&gt; 镜像管理 -&gt; 注册镜像 进行镜像的注册
-需要注册的镜像为：swr.cn-north-300.hblfrgzn.com/vision/llama-factory-qwen2_5-70b:new；
-
-创建notebook服务
-
-notebook创建的时候，选择镜像 swr.cn-north-300.hblfrgzn.com/vision/llama-factory-qwen2_5-70b:new
-准备源码
-进入创建好的notebook，在默认路径下（/home/ma-user/work)
-下载LLaMA-Factory
-git clone https://github.com/hiyouga/LLaMA-Factory.git
-获取DeepSeek-R1-Distill-Qwen-32B
-第一种方法:
-利用 huggingface-cli,  Hugging Face 官方提供的命令行工具
-安装依赖pip install -U huggingface_hub
-设置环境export HF_ENDPOINT=http://hf-mirror.com
-使用命令huggingface-cli download deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
-若你在本地的主机上已经有了该模型, 不想使用huggingface镜像的不稳定服务, 可以尝试第二种方法
-第二种方法:
-使用 华为云的对象存储服务OBS
-
-在HCS Online -&gt; 对象存储服务OBS -&gt; 创建桶
-然后在对象存储服务OBS 页面找到“获取访问密钥(AK和SK)” 在临时访问密钥中创建并记住AK, SK, STS Token
-在本地主机安装依赖pip install esdk-obs-python
-参考上传OBS脚本, 将其中的AK, SK, STSToken和实际模型参数文件名换为你的:
-from obs import ObsClient, CompleteMultipartUploadRequest, CompletePart
-import os
-import traceback
-
-# 配置信息
-ak = &#39;你的AK&#39;
-sk = &#39;你的SK&#39;
-security_token = &#39;你的STSToken&#39;
-server = &#39;https://obs.cn-north-300.hblfrgzn.com&#39;
-bucket_name = &#39;你的桶名&#39;
-# 假设你的模型参数文件名为DeepSeek-R1-Distill-Qwen-32B.tar.gz
-object_key = &#39;DeepSeek-R1-Distill-Qwen-32B.tar.gz&#39;
-file_path = &#39;DeepSeek-R1-Distill-Qwen-32B.tar.gz&#39;
-
-# 创建ObsClient实例
-obs_client = ObsClient(
-    access_key_id=ak,
-    secret_access_key=sk,
-    security_token=security_token,
-    server=server,
-    is_secure=True
-)
-
-def upload_large_file():
-    try:
-        # 检查是否存在
-        if not os.path.exists(file_path):
-            print(f&#34;文件不存在: {file_path}&#34;)
-            return
-
-        # 初始化分段上传
-        print(&#34;初始化分段上传任务...&#34;)
-        resp = obs_client.initiateMultipartUpload(bucket_name, object_key)
-        if resp.status &gt;= 300:
-            print(f&#34;初始化分段上传失败: {resp.errorCode} - {resp.errorMessage}&#34;)
-            return
-        upload_id = resp.body.uploadId
-        print(f&#34;Upload ID: {upload_id}&#34;)
-
-        # 设置分段大小（1GB）
-        part_size = 1024 * 1024 * 1024  # 1GB
-        file_size = os.path.getsize(file_path)
-        offset = 0
-        part_num = 1
-        etags = {}
-
-        # 逐个上传
-        while offset &lt; file_size:
-            current_part_size = min(part_size, file_size - offset)
-            try:
-                print(f&#34;上传分段 {part_num}...&#34;)
-                resp = obs_client.uploadPart(
-                    bucket_name, object_key, part_num, upload_id, file_path,
-                    isFile=True, partSize=current_part_size, offset=offset
-                )
-                if resp.status &gt;= 300:
-                    print(f&#34;上传分段 {part_num} 失败: {resp.errorCode} - {resp.errorMessage}&#34;)
-                    break
-                etags[part_num] = resp.body.etag
-                print(f&#34;分段 {part_num} 上传成功. ETag: {resp.body.etag}&#34;)
-            except Exception as e:
-                print(f&#34;上传分段 {part_num} 时发生异常: {e}&#34;)
-                break
-            offset &#43;= current_part_size
-            part_num &#43;= 1
-
-        # 完成
-        if part_num &gt; 1:
-            complete_parts = [CompletePart(i, etags[i]) for i in range(1, part_num)]
-            complete_request = CompleteMultipartUploadRequest(parts=complete_parts)
-            print(&#34;完成分段上传...&#34;)
-            resp = obs_client.completeMultipartUpload(bucket_name, object_key, upload_id, complete_request)
-            if resp.status &lt; 300:
-                print(&#39;文件上传成功！&#39;)
-                print(&#39;ETag:&#39;, resp.body.etag)
-            else:
-                print(&#39;文件上传失败！&#39;)
-                print(&#39;错误码:&#39;, resp.errorCode)
-                print(&#39;错误信息:&#39;, resp.errorMessage)
-        else:
-            print(&#34;没有分段上传成功，取消分段上传任务...&#34;)
-            obs_client.abortMultipartUpload(bucket_name, object_key, upload_id)
-            print(&#39;上传失败，已取消分段上传任务。&#39;)
-
-    except Exception as e:
-        print(&#39;上传过程中发生错误：&#39;)
-        print(traceback.format_exc())
-
-    finally:
-        # 关闭ObsClient
-        obs_client.close()
-
-if __name__ == &#34;__main__&#34;:
-    upload_large_file()
-至此你在本地上的模型文件就上传到华为的OBS桶内了">
+  <meta name="description" content="在ModelArts平台使用LLama Factory微调模型简单示例">
   <meta name="author" content="NPNB"/><script type="application/ld+json">
 {
     "@context": "http://schema.org",
@@ -186,9 +63,9 @@ if __name__ == &#34;__main__&#34;:
     "name" : "NPNB"
   },
   "headline": "在ModelArts平台使用LLama Factory微调模型",
-  "description" : "在ModelArts平台使用LLama-Factory微调模型 准备notebook服务 注册镜像 在HCS Online-\u0026gt; ModelArts -\u0026gt; 镜像管理 -\u0026gt; 注册镜像 进行镜像的注册\n需要注册的镜像为：swr.cn-north-300.hblfrgzn.com\/vision\/llama-factory-qwen2_5-70b:new；\n创建notebook服务 notebook创建的时候，选择镜像 swr.cn-north-300.hblfrgzn.com\/vision\/llama-factory-qwen2_5-70b:new\n准备源码 进入创建好的notebook，在默认路径下（\/home\/ma-user\/work)\n下载LLaMA-Factory git clone https:\/\/github.com\/hiyouga\/LLaMA-Factory.git 获取DeepSeek-R1-Distill-Qwen-32B 第一种方法: 利用 huggingface-cli, Hugging Face 官方提供的命令行工具\n安装依赖pip install -U huggingface_hub\n设置环境export HF_ENDPOINT=http:\/\/hf-mirror.com\n使用命令huggingface-cli download deepseek-ai\/DeepSeek-R1-Distill-Qwen-32B\n若你在本地的主机上已经有了该模型, 不想使用huggingface镜像的不稳定服务, 可以尝试第二种方法\n第二种方法: 使用 华为云的对象存储服务OBS\n在HCS Online -\u0026gt; 对象存储服务OBS -\u0026gt; 创建桶\n然后在对象存储服务OBS 页面找到“获取访问密钥(AK和SK)” 在临时访问密钥中创建并记住AK, SK, STS Token\n在本地主机安装依赖pip install esdk-obs-python\n参考上传OBS脚本, 将其中的AK, SK, STSToken和实际模型参数文件名换为你的:\nfrom obs import ObsClient, CompleteMultipartUploadRequest, CompletePart import os import traceback # 配置信息 ak = \u0026#39;你的AK\u0026#39; sk = \u0026#39;你的SK\u0026#39; security_token = \u0026#39;你的STSToken\u0026#39; server = \u0026#39;https:\/\/obs.cn-north-300.hblfrgzn.com\u0026#39; bucket_name = \u0026#39;你的桶名\u0026#39; # 假设你的模型参数文件名为DeepSeek-R1-Distill-Qwen-32B.tar.gz object_key = \u0026#39;DeepSeek-R1-Distill-Qwen-32B.tar.gz\u0026#39; file_path = \u0026#39;DeepSeek-R1-Distill-Qwen-32B.tar.gz\u0026#39; # 创建ObsClient实例 obs_client = ObsClient( access_key_id=ak, secret_access_key=sk, security_token=security_token, server=server, is_secure=True ) def upload_large_file(): try: # 检查是否存在 if not os.path.exists(file_path): print(f\u0026#34;文件不存在: {file_path}\u0026#34;) return # 初始化分段上传 print(\u0026#34;初始化分段上传任务...\u0026#34;) resp = obs_client.initiateMultipartUpload(bucket_name, object_key) if resp.status \u0026gt;= 300: print(f\u0026#34;初始化分段上传失败: {resp.errorCode} - {resp.errorMessage}\u0026#34;) return upload_id = resp.body.uploadId print(f\u0026#34;Upload ID: {upload_id}\u0026#34;) # 设置分段大小（1GB） part_size = 1024 * 1024 * 1024 # 1GB file_size = os.path.getsize(file_path) offset = 0 part_num = 1 etags = {} # 逐个上传 while offset \u0026lt; file_size: current_part_size = min(part_size, file_size - offset) try: print(f\u0026#34;上传分段 {part_num}...\u0026#34;) resp = obs_client.uploadPart( bucket_name, object_key, part_num, upload_id, file_path, isFile=True, partSize=current_part_size, offset=offset ) if resp.status \u0026gt;= 300: print(f\u0026#34;上传分段 {part_num} 失败: {resp.errorCode} - {resp.errorMessage}\u0026#34;) break etags[part_num] = resp.body.etag print(f\u0026#34;分段 {part_num} 上传成功. ETag: {resp.body.etag}\u0026#34;) except Exception as e: print(f\u0026#34;上传分段 {part_num} 时发生异常: {e}\u0026#34;) break offset \u002b= current_part_size part_num \u002b= 1 # 完成 if part_num \u0026gt; 1: complete_parts = [CompletePart(i, etags[i]) for i in range(1, part_num)] complete_request = CompleteMultipartUploadRequest(parts=complete_parts) print(\u0026#34;完成分段上传...\u0026#34;) resp = obs_client.completeMultipartUpload(bucket_name, object_key, upload_id, complete_request) if resp.status \u0026lt; 300: print(\u0026#39;文件上传成功！\u0026#39;) print(\u0026#39;ETag:\u0026#39;, resp.body.etag) else: print(\u0026#39;文件上传失败！\u0026#39;) print(\u0026#39;错误码:\u0026#39;, resp.errorCode) print(\u0026#39;错误信息:\u0026#39;, resp.errorMessage) else: print(\u0026#34;没有分段上传成功，取消分段上传任务...\u0026#34;) obs_client.abortMultipartUpload(bucket_name, object_key, upload_id) print(\u0026#39;上传失败，已取消分段上传任务。\u0026#39;) except Exception as e: print(\u0026#39;上传过程中发生错误：\u0026#39;) print(traceback.format_exc()) finally: # 关闭ObsClient obs_client.close() if __name__ == \u0026#34;__main__\u0026#34;: upload_large_file() 至此你在本地上的模型文件就上传到华为的OBS桶内了\n",
+  "description" : "在ModelArts平台使用LLama Factory微调模型简单示例\n",
   "inLanguage" : "en",
-  "wordCount":  477 ,
+  "wordCount":  478 ,
   "datePublished" : "2025-02-06T18:40:13\u002b08:00",
   "dateModified" : "2025-02-06T18:40:13\u002b08:00",
   "image" : "https:\/\/NPNB123.github.io\/img\/avatar-icon.png",
@@ -209,145 +86,14 @@ if __name__ == &#34;__main__&#34;:
 
 
 <meta property="og:title" content="在ModelArts平台使用LLama Factory微调模型" />
-<meta property="og:description" content="在ModelArts平台使用LLama-Factory微调模型
-准备notebook服务
-
-注册镜像
-
-在HCS Online-&gt; ModelArts -&gt; 镜像管理 -&gt; 注册镜像 进行镜像的注册
-需要注册的镜像为：swr.cn-north-300.hblfrgzn.com/vision/llama-factory-qwen2_5-70b:new；
-
-创建notebook服务
-
-notebook创建的时候，选择镜像 swr.cn-north-300.hblfrgzn.com/vision/llama-factory-qwen2_5-70b:new
-准备源码
-进入创建好的notebook，在默认路径下（/home/ma-user/work)
-下载LLaMA-Factory
-git clone https://github.com/hiyouga/LLaMA-Factory.git
-获取DeepSeek-R1-Distill-Qwen-32B
-第一种方法:
-利用 huggingface-cli,  Hugging Face 官方提供的命令行工具
-安装依赖pip install -U huggingface_hub
-设置环境export HF_ENDPOINT=http://hf-mirror.com
-使用命令huggingface-cli download deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
-若你在本地的主机上已经有了该模型, 不想使用huggingface镜像的不稳定服务, 可以尝试第二种方法
-第二种方法:
-使用 华为云的对象存储服务OBS
-
-在HCS Online -&gt; 对象存储服务OBS -&gt; 创建桶
-然后在对象存储服务OBS 页面找到“获取访问密钥(AK和SK)” 在临时访问密钥中创建并记住AK, SK, STS Token
-在本地主机安装依赖pip install esdk-obs-python
-参考上传OBS脚本, 将其中的AK, SK, STSToken和实际模型参数文件名换为你的:
-from obs import ObsClient, CompleteMultipartUploadRequest, CompletePart
-import os
-import traceback
-
-# 配置信息
-ak = &#39;你的AK&#39;
-sk = &#39;你的SK&#39;
-security_token = &#39;你的STSToken&#39;
-server = &#39;https://obs.cn-north-300.hblfrgzn.com&#39;
-bucket_name = &#39;你的桶名&#39;
-# 假设你的模型参数文件名为DeepSeek-R1-Distill-Qwen-32B.tar.gz
-object_key = &#39;DeepSeek-R1-Distill-Qwen-32B.tar.gz&#39;
-file_path = &#39;DeepSeek-R1-Distill-Qwen-32B.tar.gz&#39;
-
-# 创建ObsClient实例
-obs_client = ObsClient(
-    access_key_id=ak,
-    secret_access_key=sk,
-    security_token=security_token,
-    server=server,
-    is_secure=True
-)
-
-def upload_large_file():
-    try:
-        # 检查是否存在
-        if not os.path.exists(file_path):
-            print(f&#34;文件不存在: {file_path}&#34;)
-            return
-
-        # 初始化分段上传
-        print(&#34;初始化分段上传任务...&#34;)
-        resp = obs_client.initiateMultipartUpload(bucket_name, object_key)
-        if resp.status &gt;= 300:
-            print(f&#34;初始化分段上传失败: {resp.errorCode} - {resp.errorMessage}&#34;)
-            return
-        upload_id = resp.body.uploadId
-        print(f&#34;Upload ID: {upload_id}&#34;)
-
-        # 设置分段大小（1GB）
-        part_size = 1024 * 1024 * 1024  # 1GB
-        file_size = os.path.getsize(file_path)
-        offset = 0
-        part_num = 1
-        etags = {}
-
-        # 逐个上传
-        while offset &lt; file_size:
-            current_part_size = min(part_size, file_size - offset)
-            try:
-                print(f&#34;上传分段 {part_num}...&#34;)
-                resp = obs_client.uploadPart(
-                    bucket_name, object_key, part_num, upload_id, file_path,
-                    isFile=True, partSize=current_part_size, offset=offset
-                )
-                if resp.status &gt;= 300:
-                    print(f&#34;上传分段 {part_num} 失败: {resp.errorCode} - {resp.errorMessage}&#34;)
-                    break
-                etags[part_num] = resp.body.etag
-                print(f&#34;分段 {part_num} 上传成功. ETag: {resp.body.etag}&#34;)
-            except Exception as e:
-                print(f&#34;上传分段 {part_num} 时发生异常: {e}&#34;)
-                break
-            offset &#43;= current_part_size
-            part_num &#43;= 1
-
-        # 完成
-        if part_num &gt; 1:
-            complete_parts = [CompletePart(i, etags[i]) for i in range(1, part_num)]
-            complete_request = CompleteMultipartUploadRequest(parts=complete_parts)
-            print(&#34;完成分段上传...&#34;)
-            resp = obs_client.completeMultipartUpload(bucket_name, object_key, upload_id, complete_request)
-            if resp.status &lt; 300:
-                print(&#39;文件上传成功！&#39;)
-                print(&#39;ETag:&#39;, resp.body.etag)
-            else:
-                print(&#39;文件上传失败！&#39;)
-                print(&#39;错误码:&#39;, resp.errorCode)
-                print(&#39;错误信息:&#39;, resp.errorMessage)
-        else:
-            print(&#34;没有分段上传成功，取消分段上传任务...&#34;)
-            obs_client.abortMultipartUpload(bucket_name, object_key, upload_id)
-            print(&#39;上传失败，已取消分段上传任务。&#39;)
-
-    except Exception as e:
-        print(&#39;上传过程中发生错误：&#39;)
-        print(traceback.format_exc())
-
-    finally:
-        # 关闭ObsClient
-        obs_client.close()
-
-if __name__ == &#34;__main__&#34;:
-    upload_large_file()
-至此你在本地上的模型文件就上传到华为的OBS桶内了">
+<meta property="og:description" content="在ModelArts平台使用LLama Factory微调模型简单示例">
 <meta property="og:image" content="https://NPNB123.github.io/img/avatar-icon.png" />
 <meta property="og:url" content="https://NPNB123.github.io/post/%E5%9C%A8modelarts%E5%B9%B3%E5%8F%B0%E4%BD%BF%E7%94%A8llama-factory%E5%BE%AE%E8%B0%83%E6%A8%A1%E5%9E%8B/" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="NPNB&#39;s Blog" />
 
   <meta name="twitter:title" content="在ModelArts平台使用LLama Factory微调模型" />
-  <meta name="twitter:description" content="在ModelArts平台使用LLama-Factory微调模型
-准备notebook服务
-
-注册镜像
-
-在HCS Online-&gt; ModelArts -&gt; 镜像管理 -&gt; 注册镜像 进行镜像的注册
-需要注册的镜像为：swr.cn-north-300.hblfrgzn.com/vision/llama-factory-qwen2_5-70b:new；
-
-创建notebook …">
+  <meta name="twitter:description" content="在ModelArts平台使用LLama Factory微调模型简单示例">
   <meta name="twitter:image" content="https://NPNB123.github.io/img/avatar-icon.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <link href='https://NPNB123.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
@@ -492,7 +238,7 @@ if __name__ == &#34;__main__&#34;:
   
   
   
-    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;477&nbsp;words
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;478&nbsp;words
   
   
     
@@ -518,7 +264,7 @@ if __name__ == &#34;__main__&#34;:
   <div class="row">
     <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
       <article role="main" class="blog-post">
-        <h1 id="在modelarts平台使用llama-factory微调模型">在ModelArts平台使用LLama-Factory微调模型</h1>
+        <p>在ModelArts平台使用LLama Factory微调模型简单示例</p>
 <h2 id="准备notebook服务">准备notebook服务</h2>
 <ul>
 <li>注册镜像</li>
@@ -757,7 +503,6 @@ if __name__ == &#34;__main__&#34;:
 </span></span></span></code></pre></div><p>在LLaMA-Factory下执行<code>llamafactory-cli export examples/merge_lora/deepseek.yaml </code></p>
 <p>结果将在LLaMA-Factory下的models/DS_32B</p>
 <p>用上面提到的OBS方法可以把结果从notebook环境中下载下来</p>
-
 
         
 
