@@ -215,6 +215,168 @@
           
           
             <article class="post-preview">
+    <a href="https://NPNB123.github.io/post/%E5%9C%A8modelarts%E5%B9%B3%E5%8F%B0%E4%BD%BF%E7%94%A8llama-factory%E5%BE%AE%E8%B0%83%E6%A8%A1%E5%9E%8B/">
+        <h2 class="post-title">在ModelArts平台使用LLama Factory微调模型</h2>
+        
+        
+        
+    </a>
+
+    <p class="post-meta">
+        <span class="post-meta">
+  
+  
+  <i class="fas fa-calendar"></i>&nbsp;Posted on 02/06/2025
+  
+  
+  
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;477&nbsp;words
+  
+  
+    
+      &nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;NPNB
+    
+  
+  
+</span>
+
+
+    </p>
+    <div class="post-entry">
+        
+        <h1 id="在modelarts平台使用llama-factory微调模型">在ModelArts平台使用LLama-Factory微调模型</h1>
+<h2 id="准备notebook服务">准备notebook服务</h2>
+<ul>
+<li>注册镜像</li>
+</ul>
+<p>在HCS Online-&gt; ModelArts -&gt; 镜像管理 -&gt; 注册镜像 进行镜像的注册</p>
+<p>需要注册的镜像为：swr.cn-north-300.hblfrgzn.com/vision/llama-factory-qwen2_5-70b:new；</p>
+<ul>
+<li>创建notebook服务</li>
+</ul>
+<p>notebook创建的时候，选择镜像 swr.cn-north-300.hblfrgzn.com/vision/llama-factory-qwen2_5-70b:new</p>
+<h2 id="准备源码">准备源码</h2>
+<p>进入创建好的notebook，在默认路径下（/home/ma-user/work)</p>
+<h3 id="下载llama-factory">下载LLaMA-Factory</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/hiyouga/LLaMA-Factory.git
+</span></span></code></pre></div><h3 id="获取deepseek-r1-distill-qwen-32b">获取DeepSeek-R1-Distill-Qwen-32B</h3>
+<h4 id="第一种方法">第一种方法:</h4>
+<p>利用 huggingface-cli,  Hugging Face 官方提供的命令行工具</p>
+<p>安装依赖<code>pip install -U huggingface_hub</code></p>
+<p>设置环境<code>export HF_ENDPOINT=http://hf-mirror.com</code></p>
+<p>使用命令<code>huggingface-cli download deepseek-ai/DeepSeek-R1-Distill-Qwen-32B</code></p>
+<p>若你在本地的主机上已经有了该模型, 不想使用huggingface镜像的不稳定服务, 可以尝试第二种方法</p>
+<h4 id="第二种方法">第二种方法:</h4>
+<p>使用 华为云的对象存储服务OBS</p>
+<p><img src="../assets/image-20250206160142706.png" alt="image-20250206160142706"></p>
+<p>在HCS Online -&gt; 对象存储服务OBS -&gt; 创建桶</p>
+<p>然后在对象存储服务OBS 页面找到“获取访问密钥(AK和SK)” 在临时访问密钥中创建并记住AK, SK, STS Token</p>
+<p>在本地主机安装依赖<code>pip install esdk-obs-python</code></p>
+<p>参考上传OBS脚本, 将其中的AK, SK, STSToken和实际模型参数文件名换为你的:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">obs</span> <span class="kn">import</span> <span class="n">ObsClient</span><span class="p">,</span> <span class="n">CompleteMultipartUploadRequest</span><span class="p">,</span> <span class="n">CompletePart</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">traceback</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 配置信息</span>
+</span></span><span class="line"><span class="cl"><span class="n">ak</span> <span class="o">=</span> <span class="s1">&#39;你的AK&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">sk</span> <span class="o">=</span> <span class="s1">&#39;你的SK&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">security_token</span> <span class="o">=</span> <span class="s1">&#39;你的STSToken&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">server</span> <span class="o">=</span> <span class="s1">&#39;https://obs.cn-north-300.hblfrgzn.com&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">bucket_name</span> <span class="o">=</span> <span class="s1">&#39;你的桶名&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 假设你的模型参数文件名为DeepSeek-R1-Distill-Qwen-32B.tar.gz</span>
+</span></span><span class="line"><span class="cl"><span class="n">object_key</span> <span class="o">=</span> <span class="s1">&#39;DeepSeek-R1-Distill-Qwen-32B.tar.gz&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">file_path</span> <span class="o">=</span> <span class="s1">&#39;DeepSeek-R1-Distill-Qwen-32B.tar.gz&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 创建ObsClient实例</span>
+</span></span><span class="line"><span class="cl"><span class="n">obs_client</span> <span class="o">=</span> <span class="n">ObsClient</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">access_key_id</span><span class="o">=</span><span class="n">ak</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">secret_access_key</span><span class="o">=</span><span class="n">sk</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">security_token</span><span class="o">=</span><span class="n">security_token</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">server</span><span class="o">=</span><span class="n">server</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">is_secure</span><span class="o">=</span><span class="kc">True</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">upload_large_file</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 检查是否存在</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;文件不存在: </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 初始化分段上传</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;初始化分段上传任务...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">resp</span> <span class="o">=</span> <span class="n">obs_client</span><span class="o">.</span><span class="n">initiateMultipartUpload</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">,</span> <span class="n">object_key</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">&gt;=</span> <span class="mi">300</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;初始化分段上传失败: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">errorCode</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">errorMessage</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span>
+</span></span><span class="line"><span class="cl">        <span class="n">upload_id</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">uploadId</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Upload ID: </span><span class="si">{</span><span class="n">upload_id</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 设置分段大小（1GB）</span>
+</span></span><span class="line"><span class="cl">        <span class="n">part_size</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>  <span class="c1"># 1GB</span>
+</span></span><span class="line"><span class="cl">        <span class="n">file_size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">        <span class="n">part_num</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="n">etags</span> <span class="o">=</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 逐个上传</span>
+</span></span><span class="line"><span class="cl">        <span class="k">while</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="n">file_size</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">current_part_size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">part_size</span><span class="p">,</span> <span class="n">file_size</span> <span class="o">-</span> <span class="n">offset</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;上传分段 </span><span class="si">{</span><span class="n">part_num</span><span class="si">}</span><span class="s2">...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">resp</span> <span class="o">=</span> <span class="n">obs_client</span><span class="o">.</span><span class="n">uploadPart</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">bucket_name</span><span class="p">,</span> <span class="n">object_key</span><span class="p">,</span> <span class="n">part_num</span><span class="p">,</span> <span class="n">upload_id</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">isFile</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">partSize</span><span class="o">=</span><span class="n">current_part_size</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span>
+</span></span><span class="line"><span class="cl">                <span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">&gt;=</span> <span class="mi">300</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;上传分段 </span><span class="si">{</span><span class="n">part_num</span><span class="si">}</span><span class="s2"> 失败: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">errorCode</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">errorMessage</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">break</span>
+</span></span><span class="line"><span class="cl">                <span class="n">etags</span><span class="p">[</span><span class="n">part_num</span><span class="p">]</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">etag</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;分段 </span><span class="si">{</span><span class="n">part_num</span><span class="si">}</span><span class="s2"> 上传成功. ETag: </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">etag</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;上传分段 </span><span class="si">{</span><span class="n">part_num</span><span class="si">}</span><span class="s2"> 时发生异常: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">break</span>
+</span></span><span class="line"><span class="cl">            <span class="n">offset</span> <span class="o">+=</span> <span class="n">current_part_size</span>
+</span></span><span class="line"><span class="cl">            <span class="n">part_num</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 完成</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">part_num</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">complete_parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">CompletePart</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">etags</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">part_num</span><span class="p">)]</span>
+</span></span><span class="line"><span class="cl">            <span class="n">complete_request</span> <span class="o">=</span> <span class="n">CompleteMultipartUploadRequest</span><span class="p">(</span><span class="n">parts</span><span class="o">=</span><span class="n">complete_parts</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;完成分段上传...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">resp</span> <span class="o">=</span> <span class="n">obs_client</span><span class="o">.</span><span class="n">completeMultipartUpload</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">,</span> <span class="n">object_key</span><span class="p">,</span> <span class="n">upload_id</span><span class="p">,</span> <span class="n">complete_request</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;文件上传成功！&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ETag:&#39;</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">etag</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;文件上传失败！&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;错误码:&#39;</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">errorCode</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;错误信息:&#39;</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">errorMessage</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;没有分段上传成功，取消分段上传任务...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">obs_client</span><span class="o">.</span><span class="n">abortMultipartUpload</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">,</span> <span class="n">object_key</span><span class="p">,</span> <span class="n">upload_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;上传失败，已取消分段上传任务。&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;上传过程中发生错误：&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">finally</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 关闭ObsClient</span>
+</span></span><span class="line"><span class="cl">        <span class="n">obs_client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">upload_large_file</span><span class="p">()</span>
+</span></span></code></pre></div><p>至此你在本地上的模型文件就上传到华为的OBS桶内了</p>
+        <a href="https://NPNB123.github.io/post/%E5%9C%A8modelarts%E5%B9%B3%E5%8F%B0%E4%BD%BF%E7%94%A8llama-factory%E5%BE%AE%E8%B0%83%E6%A8%A1%E5%9E%8B/" class="post-read-more">[Read More]</a>
+        
+    </div>
+
+    
+
+</article>
+          
+            <article class="post-preview">
     <a href="https://NPNB123.github.io/post/%E5%9F%BA%E4%BA%8Emindie%E5%9C%A8910b%E5%B9%B3%E5%8F%B0%E9%83%A8%E7%BD%B2deepseek-r1%E8%92%B8%E9%A6%8F%E6%A8%A1%E5%9E%8B/">
         <h2 class="post-title">基于MindIE在910B平台部署DeepSeek R1蒸馏模型</h2>
         
