@@ -12,7 +12,7 @@
  
 
 
-      <title>基于MindIE在910B平台部署DeepSeek R1蒸馏模型 - </title>
+      <title>基于MindIE在910B平台部署DeepSeek R1蒸馏模型并实现简单RAG - </title>
 
   <meta name="description" content="在华为**Atlas800服务器(型号：9000)**上用MindIE进行DeepSeek R1蒸馏模型部署">
   <meta name="author" content="NPNB"/><script type="application/ld+json">
@@ -51,7 +51,7 @@
         "position": 3,
         "item": {
           "@id": "https:\/\/NPNB123.github.io\/post\/%E5%9F%BA%E4%BA%8Emindie%E5%9C%A8910b%E5%B9%B3%E5%8F%B0%E9%83%A8%E7%BD%B2deepseek-r1%E8%92%B8%E9%A6%8F%E6%A8%A1%E5%9E%8B\/",
-          "name": "基于 mind ie在910 b平台部署 deep seek r1蒸馏模型"
+          "name": "基于 mind ie在910 b平台部署 deep seek r1蒸馏模型并实现简单 rag"
         }
     }]
 }
@@ -62,10 +62,10 @@
   "author": {
     "name" : "NPNB"
   },
-  "headline": "基于MindIE在910B平台部署DeepSeek R1蒸馏模型",
+  "headline": "基于MindIE在910B平台部署DeepSeek R1蒸馏模型并实现简单RAG",
   "description" : "在华为**Atlas800服务器(型号：9000)**上用MindIE进行DeepSeek R1蒸馏模型部署\n",
   "inLanguage" : "en",
-  "wordCount":  404 ,
+  "wordCount":  727 ,
   "datePublished" : "2025-02-06T18:23:54\u002b08:00",
   "dateModified" : "2025-02-06T18:23:54\u002b08:00",
   "image" : "https:\/\/NPNB123.github.io\/img\/avatar-icon.png",
@@ -85,14 +85,14 @@
 </script>
 
 
-<meta property="og:title" content="基于MindIE在910B平台部署DeepSeek R1蒸馏模型" />
+<meta property="og:title" content="基于MindIE在910B平台部署DeepSeek R1蒸馏模型并实现简单RAG" />
 <meta property="og:description" content="在华为**Atlas800服务器(型号：9000)**上用MindIE进行DeepSeek R1蒸馏模型部署">
 <meta property="og:image" content="https://NPNB123.github.io/img/avatar-icon.png" />
 <meta property="og:url" content="https://NPNB123.github.io/post/%E5%9F%BA%E4%BA%8Emindie%E5%9C%A8910b%E5%B9%B3%E5%8F%B0%E9%83%A8%E7%BD%B2deepseek-r1%E8%92%B8%E9%A6%8F%E6%A8%A1%E5%9E%8B/" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="NPNB&#39;s Blog" />
 
-  <meta name="twitter:title" content="基于MindIE在910B平台部署DeepSeek R1蒸馏模型" />
+  <meta name="twitter:title" content="基于MindIE在910B平台部署DeepSeek R1蒸馏模型并实现简单RAG" />
   <meta name="twitter:description" content="在华为**Atlas800服务器(型号：9000)**上用MindIE进行DeepSeek R1蒸馏模型部署">
   <meta name="twitter:image" content="https://NPNB123.github.io/img/avatar-icon.png" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -226,7 +226,7 @@
           <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
             <div class="post-heading">
               
-                <h1>基于MindIE在910B平台部署DeepSeek R1蒸馏模型</h1>
+                <h1>基于MindIE在910B平台部署DeepSeek R1蒸馏模型并实现简单RAG</h1>
               
               
               
@@ -238,7 +238,7 @@
   
   
   
-    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;404&nbsp;words
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;727&nbsp;words
   
   
     
@@ -413,7 +413,7 @@
 </span></span><span class="line"><span class="cl">tail -f output.log 
 </span></span></code></pre></div><p>启动, 如果有以下内容则启动成功</p>
 <p><img src="./D:/LLM_download/KangYang_data/DeepSeek/assets/image-20250206144231996.png" alt="image-20250206144231996"></p>
-<p>浏览器会进行 CORS 检查, 浏览器向不同源（协议、域名、端口任一不同）的服务器发起请求时，会受到 CORS 策略的约束.为了避免跨域资源共享策略. 我们让大模型运行关闭端口1025上, 并写一个脚本接受开放端口35781得到的请求并转发给端口1025, 并把响应返回给35781的请求</p>
+<p>浏览器会进行 CORS 检查, 浏览器向不同源（协议、域名、端口任一不同）的服务器发起请求时，会受到 CORS 策略的约束.为了避免跨域资源共享策略. 我们让大模型运行关闭端口1025上, 并退出docker环境写一个脚本接受开放端口35781得到的请求并转发给端口1025, 并把响应返回给35781的请求</p>
 <p>脚本内容如下:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">stream_with_context</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
@@ -462,6 +462,127 @@
 <p><strong>联调测试大模型能力</strong></p>
 <p>大模型能正常调用且具有思考推理能力</p>
 <p><img src="../assets/d7a9426704ff0a8bbef54d5d4251690.png" alt="d7a9426704ff0a8bbef54d5d4251690"></p>
+<h2 id="简单rag的实现">简单RAG的实现</h2>
+<p>首先将文档整理好格式保存到txt文件中, 这里我的txt文件名为input.txt</p>
+<p>在文档的目录下运行下面的脚本, 生成向量化的数据文件</p>
+<p>embedding模型使用的是 BAAI 的 bge-Large-ZH-V1.5 ,</p>
+<p>该模型是北京智源人工智能研究院在FlagEmbedding项目中发布的中文文本嵌入模型，其强大的检索能力和合理的相似度分布使其在多个任务中表现出色。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">langchain_community.embeddings</span> <span class="kn">import</span> <span class="n">HuggingFaceBgeEmbeddings</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">rich.console</span> <span class="kn">import</span> <span class="n">Console</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">langchain_community.vectorstores</span> <span class="kn">import</span> <span class="n">FAISS</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">langchain.text_splitter</span> <span class="kn">import</span> <span class="n">RecursiveCharacterTextSplitter</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">model_name</span> <span class="o">=</span> <span class="s2">&#34;BAAI/bge-large-zh-v1.5&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;device&#34;</span><span class="p">:</span> <span class="s2">&#34;cpu&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">encode_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;normalize_embeddings&#34;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">embeddings</span> <span class="o">=</span> <span class="n">HuggingFaceBgeEmbeddings</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span> <span class="n">encode_kwargs</span><span class="o">=</span><span class="n">encode_kwargs</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">text_splitter</span> <span class="o">=</span> <span class="n">RecursiveCharacterTextSplitter</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">chunk_size</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">chunk_overlap</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">console</span> <span class="o">=</span> <span class="n">Console</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&#34;Begin Building&#34;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&#34;blue on white&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">input_file_path</span> <span class="o">=</span> <span class="s2">&#34;input.txt&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">input_file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">docs</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&#34;reading end&#34;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&#34;green on white&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">documents</span> <span class="o">=</span> <span class="n">text_splitter</span><span class="o">.</span><span class="n">split_text</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&#34;split end&#34;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&#34;green on white&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">vector</span> <span class="o">=</span> <span class="n">FAISS</span><span class="o">.</span><span class="n">from_texts</span><span class="p">(</span><span class="n">texts</span><span class="o">=</span><span class="n">documents</span><span class="p">,</span> <span class="n">embedding</span><span class="o">=</span><span class="n">embeddings</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&#34;begin save&#34;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&#34;green on white&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">vector</span><span class="o">.</span><span class="n">save_local</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="n">index_name</span><span class="o">=</span><span class="s2">&#34;vector_database&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&#34;The document is parsed and stored in the vector database&#34;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&#34;blue on white&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>执行成功后会在目录下生成保存着向量化数据的文件, 改造上面转发端口信息的脚本, 使其具有RAG功能, 我们使用Langchain来实现这个RAG功能:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">stream_with_context</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">json</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask_cors</span> <span class="kn">import</span> <span class="n">CORS</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">langchain_community.embeddings</span> <span class="kn">import</span> <span class="n">HuggingFaceBgeEmbeddings</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">langchain_community.vectorstores</span> <span class="kn">import</span> <span class="n">FAISS</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">CORS</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 初始化RAG</span>
+</span></span><span class="line"><span class="cl"><span class="n">model_name</span> <span class="o">=</span> <span class="s2">&#34;BAAI/bge-large-zh-v1.5&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;device&#34;</span><span class="p">:</span> <span class="s2">&#34;cpu&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">encode_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;normalize_embeddings&#34;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">embeddings</span> <span class="o">=</span> <span class="n">HuggingFaceBgeEmbeddings</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">encode_kwargs</span><span class="o">=</span><span class="n">encode_kwargs</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 加载向量数据库</span>
+</span></span><span class="line"><span class="cl"><span class="n">vector_db</span> <span class="o">=</span> <span class="n">FAISS</span><span class="o">.</span><span class="n">load_local</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">embeddings</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">index_name</span><span class="o">=</span><span class="s2">&#34;vector_database&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">allow_dangerous_deserialization</span><span class="o">=</span><span class="kc">True</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">vec_retriever</span> <span class="o">=</span> <span class="n">vector_db</span><span class="o">.</span><span class="n">as_retriever</span><span class="p">(</span><span class="n">search_type</span><span class="o">=</span><span class="s2">&#34;similarity&#34;</span><span class="p">,</span> <span class="n">search_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&#34;k&#34;</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">MODEL_API_URL</span> <span class="o">=</span> <span class="s2">&#34;http://localhost:1025/v1/chat/completions&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">FLASK_HOST</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">FLASK_PORT</span> <span class="o">=</span> <span class="mi">35781</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">enhance_with_rag</span><span class="p">(</span><span class="n">user_input</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">docs</span> <span class="o">=</span> <span class="n">vec_retriever</span><span class="o">.</span><span class="n">invoke</span><span class="p">(</span><span class="n">user_input</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s2">&#34;&#34;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">page_content</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;RAG检索失败: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/v1/chat/completions&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">chat_completions</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span>
+</span></span><span class="line"><span class="cl">        <span class="n">messages</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;messages&#39;</span><span class="p">,</span> <span class="p">[])</span>
+</span></span><span class="line"><span class="cl">        <span class="n">last_user_msg</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">msg</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span> <span class="k">if</span> <span class="n">msg</span><span class="p">[</span><span class="s1">&#39;role&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;user&#39;</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="ow">not</span> <span class="n">last_user_msg</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="p">{</span><span class="s2">&#34;error&#34;</span><span class="p">:</span> <span class="s2">&#34;No user message found&#34;</span><span class="p">},</span> <span class="mi">400</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 执行RAG</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rag_content</span> <span class="o">=</span> <span class="n">enhance_with_rag</span><span class="p">(</span><span class="n">last_user_msg</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">        <span class="n">enhanced_content</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">last_user_msg</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">,注意这里的信息只做参考, 不包含用户的任何信息, 若其中有用户问题需要的相关知识则可以谨慎借鉴：</span><span class="si">{</span><span class="n">rag_content</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">enhanced_messages</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span><span class="o">**</span><span class="n">msg</span><span class="p">}</span> <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">messages</span> 
+</span></span><span class="line"><span class="cl">        <span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">enhanced_messages</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;content&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">enhanced_content</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 发起流式请求</span>
+</span></span><span class="line"><span class="cl">        <span class="n">model_response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">MODEL_API_URL</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;messages&#39;</span><span class="p">:</span> <span class="n">enhanced_messages</span><span class="p">},</span>  <span class="c1"># 使用增强后的消息</span>
+</span></span><span class="line"><span class="cl">            <span class="n">stream</span><span class="o">=</span><span class="kc">True</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">def</span> <span class="nf">generate</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">model_response</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">chunk</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">yield</span> <span class="n">chunk</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 返回流式响应</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">stream_with_context</span><span class="p">(</span><span class="n">generate</span><span class="p">()),</span>
+</span></span><span class="line"><span class="cl">            <span class="n">content_type</span><span class="o">=</span><span class="n">model_response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="p">{</span><span class="s2">&#34;error&#34;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&#34;Model server connection failed: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">},</span> <span class="mi">500</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Unexpected error: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="p">{</span><span class="s2">&#34;error&#34;</span><span class="p">:</span> <span class="s2">&#34;Internal server error&#34;</span><span class="p">},</span> <span class="mi">500</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">FLASK_HOST</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">FLASK_PORT</span><span class="p">)</span>
+</span></span></code></pre></div><p>此时, 在向服务器35781端口发起请求, 得到的就是具备检索增强能力的响应了</p>
 <p><em>本篇文章完</em></p>
 
         
@@ -476,7 +597,7 @@
     <ul class="share">
       
       <li>
-        <a href="//twitter.com/share?url=https%3a%2f%2fNPNB123.github.io%2fpost%2f%25E5%259F%25BA%25E4%25BA%258Emindie%25E5%259C%25A8910b%25E5%25B9%25B3%25E5%258F%25B0%25E9%2583%25A8%25E7%25BD%25B2deepseek-r1%25E8%2592%25B8%25E9%25A6%258F%25E6%25A8%25A1%25E5%259E%258B%2f&amp;text=%e5%9f%ba%e4%ba%8eMindIE%e5%9c%a8910B%e5%b9%b3%e5%8f%b0%e9%83%a8%e7%bd%b2DeepSeek%20R1%e8%92%b8%e9%a6%8f%e6%a8%a1%e5%9e%8b&amp;via=" target="_blank" title="Share on Twitter">
+        <a href="//twitter.com/share?url=https%3a%2f%2fNPNB123.github.io%2fpost%2f%25E5%259F%25BA%25E4%25BA%258Emindie%25E5%259C%25A8910b%25E5%25B9%25B3%25E5%258F%25B0%25E9%2583%25A8%25E7%25BD%25B2deepseek-r1%25E8%2592%25B8%25E9%25A6%258F%25E6%25A8%25A1%25E5%259E%258B%2f&amp;text=%e5%9f%ba%e4%ba%8eMindIE%e5%9c%a8910B%e5%b9%b3%e5%8f%b0%e9%83%a8%e7%bd%b2DeepSeek%20R1%e8%92%b8%e9%a6%8f%e6%a8%a1%e5%9e%8b%e5%b9%b6%e5%ae%9e%e7%8e%b0%e7%ae%80%e5%8d%95RAG&amp;via=" target="_blank" title="Share on Twitter">
           <i class="fab fa-twitter"></i>
         </a>
       </li>
@@ -490,28 +611,28 @@
   
       
       <li>
-        <a href="//reddit.com/submit?url=https%3a%2f%2fNPNB123.github.io%2fpost%2f%25E5%259F%25BA%25E4%25BA%258Emindie%25E5%259C%25A8910b%25E5%25B9%25B3%25E5%258F%25B0%25E9%2583%25A8%25E7%25BD%25B2deepseek-r1%25E8%2592%25B8%25E9%25A6%258F%25E6%25A8%25A1%25E5%259E%258B%2f&amp;title=%e5%9f%ba%e4%ba%8eMindIE%e5%9c%a8910B%e5%b9%b3%e5%8f%b0%e9%83%a8%e7%bd%b2DeepSeek%20R1%e8%92%b8%e9%a6%8f%e6%a8%a1%e5%9e%8b" target="_blank" title="Share on Reddit">
+        <a href="//reddit.com/submit?url=https%3a%2f%2fNPNB123.github.io%2fpost%2f%25E5%259F%25BA%25E4%25BA%258Emindie%25E5%259C%25A8910b%25E5%25B9%25B3%25E5%258F%25B0%25E9%2583%25A8%25E7%25BD%25B2deepseek-r1%25E8%2592%25B8%25E9%25A6%258F%25E6%25A8%25A1%25E5%259E%258B%2f&amp;title=%e5%9f%ba%e4%ba%8eMindIE%e5%9c%a8910B%e5%b9%b3%e5%8f%b0%e9%83%a8%e7%bd%b2DeepSeek%20R1%e8%92%b8%e9%a6%8f%e6%a8%a1%e5%9e%8b%e5%b9%b6%e5%ae%9e%e7%8e%b0%e7%ae%80%e5%8d%95RAG" target="_blank" title="Share on Reddit">
           <i class="fab fa-reddit"></i>
         </a>
       </li>
   
       
       <li>
-        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fNPNB123.github.io%2fpost%2f%25E5%259F%25BA%25E4%25BA%258Emindie%25E5%259C%25A8910b%25E5%25B9%25B3%25E5%258F%25B0%25E9%2583%25A8%25E7%25BD%25B2deepseek-r1%25E8%2592%25B8%25E9%25A6%258F%25E6%25A8%25A1%25E5%259E%258B%2f&amp;title=%e5%9f%ba%e4%ba%8eMindIE%e5%9c%a8910B%e5%b9%b3%e5%8f%b0%e9%83%a8%e7%bd%b2DeepSeek%20R1%e8%92%b8%e9%a6%8f%e6%a8%a1%e5%9e%8b" target="_blank" title="Share on LinkedIn">
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fNPNB123.github.io%2fpost%2f%25E5%259F%25BA%25E4%25BA%258Emindie%25E5%259C%25A8910b%25E5%25B9%25B3%25E5%258F%25B0%25E9%2583%25A8%25E7%25BD%25B2deepseek-r1%25E8%2592%25B8%25E9%25A6%258F%25E6%25A8%25A1%25E5%259E%258B%2f&amp;title=%e5%9f%ba%e4%ba%8eMindIE%e5%9c%a8910B%e5%b9%b3%e5%8f%b0%e9%83%a8%e7%bd%b2DeepSeek%20R1%e8%92%b8%e9%a6%8f%e6%a8%a1%e5%9e%8b%e5%b9%b6%e5%ae%9e%e7%8e%b0%e7%ae%80%e5%8d%95RAG" target="_blank" title="Share on LinkedIn">
           <i class="fab fa-linkedin"></i>
         </a>
       </li>
   
       
       <li>
-        <a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fNPNB123.github.io%2fpost%2f%25E5%259F%25BA%25E4%25BA%258Emindie%25E5%259C%25A8910b%25E5%25B9%25B3%25E5%258F%25B0%25E9%2583%25A8%25E7%25BD%25B2deepseek-r1%25E8%2592%25B8%25E9%25A6%258F%25E6%25A8%25A1%25E5%259E%258B%2f&amp;title=%e5%9f%ba%e4%ba%8eMindIE%e5%9c%a8910B%e5%b9%b3%e5%8f%b0%e9%83%a8%e7%bd%b2DeepSeek%20R1%e8%92%b8%e9%a6%8f%e6%a8%a1%e5%9e%8b" target="_blank" title="Share on StumbleUpon">
+        <a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fNPNB123.github.io%2fpost%2f%25E5%259F%25BA%25E4%25BA%258Emindie%25E5%259C%25A8910b%25E5%25B9%25B3%25E5%258F%25B0%25E9%2583%25A8%25E7%25BD%25B2deepseek-r1%25E8%2592%25B8%25E9%25A6%258F%25E6%25A8%25A1%25E5%259E%258B%2f&amp;title=%e5%9f%ba%e4%ba%8eMindIE%e5%9c%a8910B%e5%b9%b3%e5%8f%b0%e9%83%a8%e7%bd%b2DeepSeek%20R1%e8%92%b8%e9%a6%8f%e6%a8%a1%e5%9e%8b%e5%b9%b6%e5%ae%9e%e7%8e%b0%e7%ae%80%e5%8d%95RAG" target="_blank" title="Share on StumbleUpon">
           <i class="fab fa-stumbleupon"></i>
         </a>
       </li>
   
       
       <li>
-        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fNPNB123.github.io%2fpost%2f%25E5%259F%25BA%25E4%25BA%258Emindie%25E5%259C%25A8910b%25E5%25B9%25B3%25E5%258F%25B0%25E9%2583%25A8%25E7%25BD%25B2deepseek-r1%25E8%2592%25B8%25E9%25A6%258F%25E6%25A8%25A1%25E5%259E%258B%2f&amp;description=%e5%9f%ba%e4%ba%8eMindIE%e5%9c%a8910B%e5%b9%b3%e5%8f%b0%e9%83%a8%e7%bd%b2DeepSeek%20R1%e8%92%b8%e9%a6%8f%e6%a8%a1%e5%9e%8b" target="_blank" title="Share on Pinterest">
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fNPNB123.github.io%2fpost%2f%25E5%259F%25BA%25E4%25BA%258Emindie%25E5%259C%25A8910b%25E5%25B9%25B3%25E5%258F%25B0%25E9%2583%25A8%25E7%25BD%25B2deepseek-r1%25E8%2592%25B8%25E9%25A6%258F%25E6%25A8%25A1%25E5%259E%258B%2f&amp;description=%e5%9f%ba%e4%ba%8eMindIE%e5%9c%a8910B%e5%b9%b3%e5%8f%b0%e9%83%a8%e7%bd%b2DeepSeek%20R1%e8%92%b8%e9%a6%8f%e6%a8%a1%e5%9e%8b%e5%b9%b6%e5%ae%9e%e7%8e%b0%e7%ae%80%e5%8d%95RAG" target="_blank" title="Share on Pinterest">
           <i class="fab fa-pinterest"></i>
         </a>
       </li>

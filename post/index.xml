@@ -18,7 +18,7 @@
       <description>&lt;p&gt;在ModelArts平台使用LLama Factory微调模型简单示例&lt;/p&gt;</description>
     </item>
     <item>
-      <title>基于MindIE在910B平台部署DeepSeek R1蒸馏模型</title>
+      <title>基于MindIE在910B平台部署DeepSeek R1蒸馏模型并实现简单RAG</title>
       <link>https://NPNB123.github.io/post/%E5%9F%BA%E4%BA%8Emindie%E5%9C%A8910b%E5%B9%B3%E5%8F%B0%E9%83%A8%E7%BD%B2deepseek-r1%E8%92%B8%E9%A6%8F%E6%A8%A1%E5%9E%8B/</link>
       <pubDate>Thu, 06 Feb 2025 18:23:54 +0800</pubDate><author>huozerun@qq.com (NPNB)</author>
       <guid>https://NPNB123.github.io/post/%E5%9F%BA%E4%BA%8Emindie%E5%9C%A8910b%E5%B9%B3%E5%8F%B0%E9%83%A8%E7%BD%B2deepseek-r1%E8%92%B8%E9%A6%8F%E6%A8%A1%E5%9E%8B/</guid>
