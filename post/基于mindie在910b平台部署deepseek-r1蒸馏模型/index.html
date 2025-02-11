@@ -65,7 +65,7 @@
   "headline": "基于MindIE在910B平台部署DeepSeek R1蒸馏模型并实现简单RAG",
   "description" : "在华为**Atlas800服务器(型号：9000)**上用MindIE进行DeepSeek R1蒸馏模型部署\n",
   "inLanguage" : "en",
-  "wordCount":  727 ,
+  "wordCount":  726 ,
   "datePublished" : "2025-02-06T18:23:54\u002b08:00",
   "dateModified" : "2025-02-06T18:23:54\u002b08:00",
   "image" : "https:\/\/NPNB123.github.io\/img\/avatar-icon.png",
@@ -238,7 +238,7 @@
   
   
   
-    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;727&nbsp;words
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;726&nbsp;words
   
   
     
@@ -302,7 +302,6 @@
 <p>因为使用了Docker容器, docker中系统为Ubuntu 18.04.6 LTS</p>
 <h2 id="配置环境">配置环境</h2>
 <h3 id="各软件的下载路径">各软件的下载路径</h3>
-<p>以Euleros为例</p>
 <p>驱动 ：<a href="https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2023.0.0/Ascend-hdk-910-npu-driver_23.0.0_linux-aarch64.run">下载地址</a></p>
 <p>固件：<a href="https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Ascend%20HDK/Ascend%20HDK%2023.0.0/Ascend-hdk-910-npu-firmware_7.1.0.3.220.run">下载地址</a></p>
 <p>CANN：<a href="https://wyz.obs.cn-north-300.hblfrgzn.com/install_pkgs/mindie-1.0.t70/Ascend-cann-toolkit_8.0.T60_linux-aarch64.run">下载地址</a></p>
@@ -412,7 +411,7 @@
 </span></span><span class="line"><span class="cl"># 可通过如下命令查看日志
 </span></span><span class="line"><span class="cl">tail -f output.log 
 </span></span></code></pre></div><p>启动, 如果有以下内容则启动成功</p>
-<p><img src="./D:/LLM_download/KangYang_data/DeepSeek/assets/image-20250206144231996.png" alt="image-20250206144231996"></p>
+<p><img src="../assets/image-20250206144231996.png" alt="image-20250206144231996"></p>
 <p>浏览器会进行 CORS 检查, 浏览器向不同源（协议、域名、端口任一不同）的服务器发起请求时，会受到 CORS 策略的约束.为了避免跨域资源共享策略. 我们让大模型运行关闭端口1025上, 并退出docker环境写一个脚本接受开放端口35781得到的请求并转发给端口1025, 并把响应返回给35781的请求</p>
 <p>脚本内容如下:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">stream_with_context</span>
