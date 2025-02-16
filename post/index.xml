@@ -8,8 +8,15 @@
     <language>en</language>
     <managingEditor>huozerun@qq.com (NPNB)</managingEditor>
     <webMaster>huozerun@qq.com (NPNB)</webMaster>
-    <lastBuildDate>Thu, 06 Feb 2025 18:40:13 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 17 Feb 2025 01:22:55 +0800</lastBuildDate>
     <atom:link href="https://NPNB123.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>在300iDUO推理卡平台上使用mindie部署DeepSeek R1 Distill Qwen 32B</title>
+      <link>https://NPNB123.github.io/post/%E5%9C%A8300iduo%E6%8E%A8%E7%90%86%E5%8D%A1%E5%B9%B3%E5%8F%B0%E4%B8%8A%E4%BD%BF%E7%94%A8mindie%E9%83%A8%E7%BD%B2deepseek-r1-distill-qwen-32b/</link>
+      <pubDate>Mon, 17 Feb 2025 01:22:55 +0800</pubDate><author>huozerun@qq.com (NPNB)</author>
+      <guid>https://NPNB123.github.io/post/%E5%9C%A8300iduo%E6%8E%A8%E7%90%86%E5%8D%A1%E5%B9%B3%E5%8F%B0%E4%B8%8A%E4%BD%BF%E7%94%A8mindie%E9%83%A8%E7%BD%B2deepseek-r1-distill-qwen-32b/</guid>
+      <description>&lt;p&gt;在华为300iDUO推理卡平台上用MindIE进行DeepSeek R1蒸馏模型部署&lt;/p&gt;</description>
+    </item>
     <item>
       <title>在ModelArts平台使用LLama Factory微调模型</title>
       <link>https://NPNB123.github.io/post/%E5%9C%A8modelarts%E5%B9%B3%E5%8F%B0%E4%BD%BF%E7%94%A8llama-factory%E5%BE%AE%E8%B0%83%E6%A8%A1%E5%9E%8B/</link>
@@ -22,7 +29,7 @@
       <link>https://NPNB123.github.io/post/%E5%9F%BA%E4%BA%8Emindie%E5%9C%A8910b%E5%B9%B3%E5%8F%B0%E9%83%A8%E7%BD%B2deepseek-r1%E8%92%B8%E9%A6%8F%E6%A8%A1%E5%9E%8B/</link>
       <pubDate>Thu, 06 Feb 2025 18:23:54 +0800</pubDate><author>huozerun@qq.com (NPNB)</author>
       <guid>https://NPNB123.github.io/post/%E5%9F%BA%E4%BA%8Emindie%E5%9C%A8910b%E5%B9%B3%E5%8F%B0%E9%83%A8%E7%BD%B2deepseek-r1%E8%92%B8%E9%A6%8F%E6%A8%A1%E5%9E%8B/</guid>
-      <description>&lt;p&gt;在华为**Atlas800服务器(型号：9000)**上用MindIE进行DeepSeek R1蒸馏模型部署&lt;/p&gt;</description>
+      <description>&lt;p&gt;在华为Atlas800服务器(型号：9000)上用MindIE进行DeepSeek R1蒸馏模型部署&lt;/p&gt;</description>
     </item>
     <item>
       <title>LoRA的原理</title>
