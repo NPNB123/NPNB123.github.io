@@ -312,7 +312,7 @@
 </span></span><span class="line"><span class="cl"># 可通过如下命令查看日志
 </span></span><span class="line"><span class="cl">tail -f output.log 
 </span></span></code></pre></div><p>启动, 如果有以下内容则启动成功</p>
-<p><img src="../assets%5Cimage-20250206144231996.png" alt="image-20250206144231996"></p>
+<p><img src="..%5Cassets%5Cimage-20250206144231996.png" alt="image-20250206144231996"></p>
 <p>启用服务后在另一个终端页面，参考以下指令进行mindie server本机端口访问：</p>
 <p>注：以下命令中model参数需与/usr/local/Ascend/mindie/latest/mindie-service/conf/config.json文件中modelName保持一致，id参数可进行自定义，其中的问答内容根据自己应用领域修改</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -H <span class="s2">&#34;Accept: application/json&#34;</span> -H <span class="s2">&#34;Content-type: application/json&#34;</span> -X POST -d <span class="s1">&#39;{
