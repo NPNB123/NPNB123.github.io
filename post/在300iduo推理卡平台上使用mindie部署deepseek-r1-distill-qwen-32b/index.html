@@ -65,7 +65,7 @@
   "headline": "在300IDuo推理卡平台上使用mindie部署DeepSeek R1-Distill-Qwen-32B",
   "description" : "在华为300iDUO推理卡平台上用MindIE进行DeepSeek R1蒸馏模型部署\n",
   "inLanguage" : "en",
-  "wordCount":  138 ,
+  "wordCount":  284 ,
   "datePublished" : "2025-02-17T01:22:55\u002b08:00",
   "dateModified" : "2025-02-17T01:22:55\u002b08:00",
   "image" : "https:\/\/NPNB123.github.io\/img\/avatar-icon.png",
@@ -97,7 +97,7 @@
   <meta name="twitter:image" content="https://NPNB123.github.io/img/avatar-icon.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <link href='https://NPNB123.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
-  <meta name="generator" content="Hugo 0.144.0">
+  <meta name="generator" content="Hugo 0.144.1">
   <link rel="alternate" href="https://NPNB123.github.io/index.xml" type="application/rss+xml" title="NPNB&#39;s Blog"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css" integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI" crossorigin="anonymous">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" integrity="sha384-h/hnnw1Bi4nbpD6kE7nYfCXzovi622sY5WBxww8ARKwpdLj5kUWjRuyiXaD1U2JT" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous"><link rel="stylesheet" href="https://NPNB123.github.io/css/main.css" /><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
@@ -238,7 +238,7 @@
   
   
   
-    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;138&nbsp;words
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;284&nbsp;words
   
   
     
@@ -274,15 +274,17 @@
 <li>npu信息</li>
 </ul>
 <p><img src="../assets/image-20250217011427166.png" alt="image-20250217011427166"></p>
-<p>docker镜像:</p>
+<p>使用该Docker镜像</p>
+<p><a href="https://pan.baidu.com/s/12gdkLL-lllTzzb7WeTPETw?pwd=npnb">docker镜像-百度网盘下载</a></p>
 <p>启动docker镜像:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker run -it --ipc<span class="o">=</span>host --device<span class="o">=</span>/dev/davinci0 --device<span class="o">=</span>/dev/davinci1 --device<span class="o">=</span>/dev/davinci_manager --device<span class="o">=</span>/dev/devmm_svm --device<span class="o">=</span>/dev/hisi_hdc -v /usr/local/Ascend/driver:/usr/local/Ascend/driver -v /usr/local/Ascend/add-ons/:/usr/local/Ascend/add-ons/ -v /usr/local/sbin/npu-smi:/usr/local/sbin/npu-smi -v /usr/local/sbin/:/usr/local/sbin/ -v /var/log/npu/:/usr/slog -v /home/baixin/lq2:/home/HwHiAiUser mindie:1.0.0-T71.B020-300I-Duo-arm64-py3.11 /bin/bash
-</span></span></code></pre></div><p>把准备好的DeepSeek-R1-Distill-Qwen-32B参数文件上传到服务器中</p>
-<p>使用</p>
-<p><code>chown -R root:root DeepSeek-R1-Distill-Qwen-32B</code></p>
-<p><code>chmod -R 750 DeepSeek-R1-Distill-Qwen-32B</code></p>
-<p>修改文件权限</p>
-<p>进入DeepSeek-R1-Distill-Qwen-32B, 修改其中的config.json文件, 将其中的torch_dtype项改为float16, 如图中箭头所指的项</p>
+</span></span></code></pre></div><p><strong>模型参数文件需修改权限模式和目录所有者</strong></p>
+<p>把模型参数文件下载到服务器中</p>
+<p>使用命令修改模型目录的所有者和权限模式, 这里<strong>以DeepSeek-R1-Distill-Qwen-32B为例</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">chown -R root:root DeepSeek-R1-Distill-Qwen-32B
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">chmod -R <span class="m">750</span> DeepSeek-R1-Distill-Qwen-32B
+</span></span></code></pre></div><p>进入DeepSeek-R1-Distill-Qwen-32B, 修改其中的config.json文件, 将其中torch_dtype项改为float16, 如图中箭头所指的项</p>
 <p><img src="../assets/image-20250206143446309.png" alt="image"></p>
 <h3 id="进行mindie-servier服务推理">进行mindie-servier服务推理</h3>
 <p><strong>修改mindie-servier配置:</strong></p>
@@ -291,25 +293,26 @@
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1"># 修改 config.json 文件，首先打开该文件</span>
 </span></span><span class="line"><span class="cl">vi conf/config.json 
-</span></span><span class="line"><span class="cl"><span class="c1"># 然后进行修改，如下图所示</span>
-</span></span></code></pre></div><ul>
+</span></span></code></pre></div><p>修改以下项:</p>
+<ul>
 <li>httpsEnable 设为false</li>
 <li>numDeviceIds 设为你想使用的卡的id</li>
 <li>worldSize 设为卡数</li>
-<li>modelWeightPath设为你的</li>
+<li>modelWeightPath设为你的模型参数目录路径</li>
 </ul>
+<p>注意modelName要和请求时用到的model名相同</p>
 <p><img src="../assets/image-20250206143720519.png" alt="image"></p>
 <p><img src="../assets/image-20250206143802646.png" alt="image"></p>
 <p>这些参数可以在<a href="https://www.hiascend.com/document/detail/zh/mindie/10RC3/mindieservice/servicedev/mindie_service0285.html">配置参数说明-MindIE Server-MindIE Service组件-MindIE Service开发指南-服务化集成部署-MindIE1.0.RC3开发文档-昇腾社区</a>找到说明</p>
 <p><strong>启动 mindie-server 服务</strong></p>
-<p>根据上面的config.json可以看到, 服务会启动在 http://127.0.0.1:1025 ，用户可通过在config.json文件下修改ipAddress和port参数来自定义启动IP地址与端口号。</p>
+<p>根据上面的config.json可以看到, 服务会启动在 <strong><code>http://127.0.0.1:1025</code></strong> ，用户可通过在config.json文件下修改ipAddress和port参数来自定义启动IP地址与端口号。</p>
 <p>启动命令:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cd /usr/local/Ascend/mindie/latest/mindie-service
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">cd</span> /usr/local/Ascend/mindie/latest/mindie-service
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"># 启动服务并将日志输入到 output.log文件中
-</span></span><span class="line"><span class="cl">nohup ./bin/mindieservice_daemon &gt; output.log 2&gt;&amp;1 &amp;
+</span></span><span class="line"><span class="cl"><span class="c1"># 启动服务并将日志输入到 output.log文件中</span>
+</span></span><span class="line"><span class="cl">nohup ./bin/mindieservice_daemon &gt; output.log 2&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="p">&amp;</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"># 可通过如下命令查看日志
+</span></span><span class="line"><span class="cl"><span class="c1"># 可通过如下命令查看日志</span>
 </span></span><span class="line"><span class="cl">tail -f output.log 
 </span></span></code></pre></div><p>启动, 如果有以下内容则启动成功</p>
 <p><img src="../assets/image-20250206144231996.png" alt="image-20250206144231996"></p>
@@ -331,7 +334,64 @@
 </span></span></span><span class="line"><span class="cl"><span class="s1"> &#34;top_p&#34;: 0.95,
 </span></span></span><span class="line"><span class="cl"><span class="s1"> &#34;stream&#34;: false
 </span></span></span><span class="line"><span class="cl"><span class="s1">}&#39;</span> http://127.0.0.1:1025/v1/chat/completions
-</span></span></code></pre></div><p><em>本篇文章完</em></p>
+</span></span></code></pre></div><p>测试模型tps:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">benchmark</span><span class="p">(</span><span class="n">backend_url</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">top_p</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;Content-Type&#34;</span><span class="p">:</span> <span class="s2">&#34;application/json&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">       <span class="s2">&#34;model&#34;</span><span class="p">:</span> <span class="s2">&#34;string&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;messages&#34;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">}],</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;temperature&#34;</span><span class="p">:</span> <span class="n">temperature</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;top_p&#34;</span><span class="p">:</span> <span class="n">top_p</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;do_sample&#34;</span><span class="p">:</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">total_time</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">total_tokens</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">backend_url</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">result</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 计算总时间（预填充时间 + 解码总时间）</span>
+</span></span><span class="line"><span class="cl">        <span class="n">total_inference_time</span> <span class="o">=</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;decode_time_arr&#39;</span><span class="p">,</span> <span class="p">[]))</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;prefill_time&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="mi">1000</span>
+</span></span><span class="line"><span class="cl">        <span class="n">completion_tokens</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;usage&#39;</span><span class="p">][</span><span class="s1">&#39;completion_tokens&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">total_time</span> <span class="o">+=</span> <span class="n">total_inference_time</span>
+</span></span><span class="line"><span class="cl">        <span class="n">total_tokens</span> <span class="o">+=</span> <span class="n">completion_tokens</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">avg_tps</span> <span class="o">=</span> <span class="n">total_tokens</span> <span class="o">/</span> <span class="n">total_time</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">avg_tps</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">test_prompts</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;人工智能在医疗诊断领域有哪些应用和挑战？&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;区块链技术是如何保障数据安全和不可篡改的？&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;简述大数据处理中的数据清洗和特征工程的重要性。&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;虚拟现实（VR）和增强现实（AR）技术的区别和联系是什么？&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;谈谈机器学习中的监督学习和无监督学习的区别。&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">url</span> <span class="o">=</span> <span class="s2">&#34;http://localhost:1025/v1/chat/completions&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parameters</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tpss</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">top_p</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">test_prompts</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">tps</span> <span class="o">=</span> <span class="n">benchmark</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">top_p</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;this round tps : </span><span class="si">{</span><span class="n">tps</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">tpss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tps</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">overall_avg_tps</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">tpss</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">tpss</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Overall average TPS result: </span><span class="si">{</span><span class="n">overall_avg_tps</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">main</span><span class="p">()</span>
+</span></span></code></pre></div><p><em>DeepSeek-R1-Distill-Qwen-32B在mindie的 TPS 约为4.86</em></p>
+<p><em>本篇文章完</em></p>
 
         
 
@@ -473,7 +533,7 @@
         </p>
         
         <p class="credits theme-by text-muted">
-          <a href="https://gohugo.io">Hugo v0.144.0</a> powered &nbsp;&bull;&nbsp; Theme <a href="https://github.com/halogenica/beautifulhugo">Beautiful Hugo</a> adapted from <a href="https://deanattali.com/beautiful-jekyll/">Beautiful Jekyll</a>
+          <a href="https://gohugo.io">Hugo v0.144.1</a> powered &nbsp;&bull;&nbsp; Theme <a href="https://github.com/halogenica/beautifulhugo">Beautiful Hugo</a> adapted from <a href="https://deanattali.com/beautiful-jekyll/">Beautiful Jekyll</a>
           
         </p>
       </div>
